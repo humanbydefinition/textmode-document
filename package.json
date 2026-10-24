@@ -1,0 +1,70 @@
+{
+	"name": "@textmode/document",
+	"version": "1.0.0",
+	"description": "Portable textmode document format, JSON Schema, types, and dependency-free decoder.",
+	"license": "MIT",
+	"author": "humanbydefinition <hello@textmode.art> (https://code.textmode.art)",
+	"type": "module",
+	"sideEffects": false,
+	"engines": {
+		"node": ">=24"
+	},
+	"packageManager": "npm@11.16.0",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		},
+		"./schema/2.0": {
+			"types": "./schemas/2.0/schema.d.ts",
+			"default": "./schemas/2.0/schema.json"
+		}
+	},
+	"files": [
+		"dist/**/*.js",
+		"dist/**/*.d.ts",
+		"schemas/2.0/schema.json",
+		"schemas/2.0/schema.d.ts",
+		"docs/*.md"
+	],
+	"publishConfig": {
+		"access": "public"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/humanbydefinition/textmode-document.git"
+	},
+	"bugs": {
+		"url": "https://github.com/humanbydefinition/textmode-document/issues"
+	},
+	"homepage": "https://github.com/humanbydefinition/textmode-document#readme",
+	"scripts": {
+		"clean": "node --input-type=module -e \"import { rmSync } from 'node:fs'; rmSync('dist', { recursive: true, force: true })\"",
+		"build": "npm run clean && tsc -p tsconfig.build.json",
+		"format": "textmode-lint format",
+		"format:check": "textmode-lint format:check",
+		"lint": "textmode-lint lint src tests && node --check scripts/check-package.mjs",
+		"lint:markdown": "textmode-lint lint:markdown",
+		"typecheck": "tsc --noEmit -p tsconfig.json",
+		"docs:check": "textmode-docs check",
+		"docs:build": "textmode-docs build",
+		"test": "vitest run",
+		"check:package": "node scripts/check-package.mjs",
+		"check": "npm run format:check && npm run lint && npm run lint:markdown && npm run typecheck && npm run docs:check && npm test && npm run build && npm run check:package",
+		"prepack": "npm run build",
+		"prepare": "npm run build"
+	},
+	"devDependencies": {
+		"@textmode/docs": "^0.3.0",
+		"@textmode/lint": "^0.1.2",
+		"@textmode/tsconfig": "^0.2.2",
+		"@types/node": "^26.4.1",
+		"ajv": "^8.20.0",
+		"ajv-formats": "^3.0.1",
+		"typescript": "^6.0.3",
+		"vitest": "^5.0.0"
+	},
+	"prettier": "@textmode/lint/prettier"
+}
