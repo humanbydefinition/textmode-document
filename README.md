@@ -17,8 +17,9 @@ from the source repository for now:
 npm install github:humanbydefinition/textmode-document
 ```
 
-npm builds this Git dependency automatically. The exporter pins an exact source
-commit for reproducible installs.
+npm builds this Git dependency automatically. The repository is currently private,
+so Git must be authenticated with an account that has read access. The exporter
+pins an exact source commit for reproducible installs.
 
 The JavaScript interface is ESM-only. It has no runtime dependencies and does not
 require `textmode.js`, a renderer, DOM globals, or media encoders.

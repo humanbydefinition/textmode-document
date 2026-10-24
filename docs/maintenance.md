@@ -48,6 +48,12 @@ commit. npm builds Git dependencies through the `prepare` script and creates the
 lockfile through normal installation. This keeps clean installs reproducible
 without a local directory, manual symlink, or unpublished registry URL.
 
+The source repository is currently private. Local installs need authenticated Git
+with repository read access. CI in another repository needs a read credential for
+this private repository; its default GitHub token does not grant cross-repository
+access. Configure that access before enabling downstream CI for this dependency.
+Do not place credentials in a dependency URL or commit them.
+
 Packed verification can use `TEXTMODE_DOCUMENT_TARBALL` to override the Git source
 with a local tarball in an isolated consumer. The tarball is test input and is
 not committed.
