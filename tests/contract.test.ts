@@ -1,10 +1,9 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 
-import { Ajv2020 } from 'ajv/dist/2020.js';
-import addFormats from 'ajv-formats';
 import { describe, expect, it } from 'vitest';
 import { decodeTextmodeDocument } from '../src/index.js';
+import { compileSchema } from './support/schema.js';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 const SCHEMA_PATH = 'schemas/2.0/schema.json';
@@ -32,9 +31,7 @@ function selectedFixture(): MutableSelectedDocument {
 	return readFixture('v2/selected.json') as MutableSelectedDocument;
 }
 
-const ajv = new Ajv2020({ validateFormats: true });
-addFormats.default(ajv, { mode: 'full' });
-const validateV2 = ajv.compile(readJSON(SCHEMA_PATH) as object);
+const validateV2 = compileSchema('2.0');
 
 describe('textmode document contract', () => {
 	it('declares the Draft 2020-12 schema identity', () => {

@@ -1,11 +1,9 @@
 import { readFileSync } from 'node:fs';
-import { Ajv2020 } from 'ajv/dist/2020.js';
-import addFormats from 'ajv-formats';
 import { describe, expect, it } from 'vitest';
 import { decodeTextmodeDocument, type TextmodeDocumentJSON } from '../src/index.js';
-const ajv = new Ajv2020({ validateFormats: true });
-addFormats.default(ajv, { mode: 'full' });
-const validate = ajv.compile(JSON.parse(readFileSync(new URL('../schemas/3.0/schema.json', import.meta.url), 'utf8')));
+import { compileSchema } from './support/schema.js';
+
+const validate = compileSchema('3.0');
 function fixture(name = 'single-layer'): TextmodeDocumentJSON {
 	return JSON.parse(readFileSync(new URL(`fixtures/v3/${name}.json`, import.meta.url), 'utf8'));
 }
