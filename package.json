@@ -68,7 +68,7 @@
 		"typecheck": "tsc --noEmit -p tsconfig.json",
 		"docs:check": "textmode-docs check",
 		"docs:build": "textmode-docs build",
-		"test": "vitest run",
+		"test": "vitest run --dir tests",
 		"check:package": "node scripts/check-package.mjs",
 		"check": "npm run format:check && npm run lint && npm run lint:markdown && npm run typecheck && npm run docs:check && npm test && npm run build && npm run check:package",
 		"prepare": "npm run build"
