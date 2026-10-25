@@ -1,0 +1,14 @@
+blank_issues_enabled: true
+contact_links:
+    - name: Document format specification
+      url: https://github.com/humanbydefinition/textmode-document/blob/main/docs/specification-3.0.md
+      about: Check the format rules before reporting a document compatibility issue.
+    - name: Consumer guide
+      url: https://github.com/humanbydefinition/textmode-document/blob/main/docs/consumer-guide.md
+      about: Read how to parse documents, validate them, and apply app-specific limits.
+    - name: API usage and community support
+      url: https://discord.gg/sjrw8QXNks
+      about: Ask questions about using textmode.js and its document format.
+    - name: textmode.js documentation
+      url: https://code.textmode.art/
+      about: Browse shared guides and API references for the textmode.js ecosystem.

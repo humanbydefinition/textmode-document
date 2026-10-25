@@ -1,28 +1,28 @@
 # @textmode/document
 
-Portable textmode documents: a versioned JSON format, JSON Schema, TypeScript
-types, and a dependency-free decoder. Use the same contract in browsers, Node.js,
-and implementations written in other languages.
+<div align="center">
 
-The package reads `textmode.document@2.0.0` and migrates
-`textmode.layer@1.0.0` and `textmode.layer@1.1.0`. Package version `1.0.0` and
-document version `2.0.0` are independent: updating a library does not change files.
+<img alt="@textmode/document, portable textmode documents" src=".github/assets/readme-og.png" />
 
-## Installation
+| [![Node.js 24](https://img.shields.io/badge/Node.js-24-339933?logo=nodedotjs&logoColor=white)](https://nodejs.org/) [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/) [![JSON Schema Draft 2020-12](https://img.shields.io/badge/JSON_Schema-Draft_2020--12-85EA2D?logo=json&logoColor=white)](https://json-schema.org/draft/2020-12) | [![docs](https://img.shields.io/badge/docs-vitepress-646cff?logo=vitepress&logoColor=white)](https://code.textmode.art/) [![Discord](https://img.shields.io/discord/1357070706181017691?color=5865F2&label=Discord&logo=discord&logoColor=white)](https://discord.gg/sjrw8QXNks) | [![Ko-fi](https://shields.io/badge/ko--fi-donate-ff5f5f?logo=ko-fi)](https://ko-fi.com/V7V8JG2FY) [![GitHub Sponsors](https://img.shields.io/badge/sponsor-30363D?logo=GitHub-Sponsors&logoColor=%23EA4AAA)](https://github.com/sponsors/humanbydefinition) |
+| :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 
-The package is prepared at version `1.0.0`; npm publication is deferred. Install
-from the source repository for now:
+</div>
+
+`@textmode/document` defines a portable, versioned JSON format for textmode artwork. It provides a language-neutral specification, JSON Schema, TypeScript types, and a dependency-free decoder for browsers and Node.js.
+
+The package defines a unified `textmode.document@3.0.0` structure and reads v2 plus `textmode.layer@1.0.0` and `textmode.layer@1.1.0`. The package version and document format version are independent. Updating this library does not change existing files.
+
+## Install
+
+This checkout prepares unpublished v3 support. From a sibling consumer project,
+install the local package with npm:
 
 ```sh
-npm install github:humanbydefinition/textmode-document
+npm install ../textmode-document
 ```
 
-npm builds this Git dependency automatically. The repository is currently private,
-so Git must be authenticated with an account that has read access. The exporter
-pins an exact source commit for reproducible installs.
-
-The JavaScript interface is ESM-only. It has no runtime dependencies and does not
-require `textmode.js`, a renderer, DOM globals, or media encoders.
+The JavaScript interface is ESM-only and has no runtime dependencies. It does not require `textmode.js`, a renderer, DOM globals, or media encoders.
 
 ## Decode a document
 
@@ -36,35 +36,41 @@ const result = parseTextmodeDocumentJSON(jsonText, {
 if (!result.ok) {
 	console.error(result.error.code, result.error.path, result.error.message);
 } else {
-	console.log(result.document.target, result.warnings);
+	console.log(result.document.layers.length, result.warnings);
 }
 ```
 
-Successful decoding returns a new canonical document: colors use RGBA objects,
-cell rotations use `[0, 360)`, and unknown properties are omitted. Apply the
-destination app's supported-feature policy after decoding.
+Successful decoding returns a new canonical document. Colors use RGBA objects, cell rotations use `[0, 360)`, and unknown properties are omitted. Apply each app's supported-feature policy after decoding.
 
 ## Documentation
 
-- [Consumer guide](docs/consumer-guide.md): parsing, schema imports, error handling,
-  resource budgets, and complete documents.
-- [Format 2.0 specification](docs/specification-2.0.md): the language-neutral
-  contract for producers and consumers.
-- [Maintenance guide](docs/maintenance.md): ownership, compatibility, tests, and
-  releases.
-- [JSON Schema](schemas/2.0/schema.json): also available through the
-  `@textmode/document/schema/2.0` package entry point.
+- [Consumer guide](docs/consumer-guide.md): parsing, schema imports, error handling, resource budgets, and complete examples.
+- [Format 3.0 specification](docs/specification-3.0.md): the language-neutral contract for producers and consumers.
+- [JSON Schema visual guide](docs/schema-3.0.md): diagrams of document shapes, layers, cells, and validation responsibilities.
+- [Maintenance guide](docs/maintenance.md): ownership, compatibility, tests, and release policy.
+- [JSON Schema](schemas/3.0/schema.json): also available from `@textmode/document/schema/3.0`.
 
-The schema identifier is an identifier, not a promise of a hosted download.
-Test fixtures are private implementation data. They are not package exports and
-are excluded from npm packages.
+The schema identifier is an identifier. It does not promise that the schema is hosted at that URL. Test fixtures are private test data. They are not package exports and are excluded from npm packages.
 
-## Development
+## Contributing
 
-Use Node 24 and npm. Run `npm ci`, then `npm run check`. The
-implementation was extracted from
-[`textmode.export.js`](https://github.com/humanbydefinition/textmode.export.js).
+Thank you for considering a contribution to this project.
+
+Read the [Contributing Guide](./CONTRIBUTING.md) to get started.
 
 ## License
 
 `@textmode/document` is dedicated to the public domain under [CC0 1.0 Universal](./LICENSE).
+
+## Local v3 development
+
+This checkout prepares unpublished package version `2.0.0-dev.0`. Keep sibling
+checkouts of `textmode-document`, `textmode.export.js`, `create.textmode.art`, and
+`export.textmode.art`. Build this package first, then the exporter, then the apps.
+Consumers use npm `file:../textmode-document` directory dependencies; run npm
+install in each repository after rebuilding dependencies. Do not publish these
+local dependency manifests. Downstream CI using these local dependencies requires
+the same sibling layout.
+
+The [v2 specification](docs/specification-2.0.md) and schema import
+`@textmode/document/schema/2.0` remain available for existing files.
