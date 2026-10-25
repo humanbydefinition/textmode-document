@@ -19,3 +19,10 @@ Do not use these files as public examples or package imports. They are excluded
 from npm packages. To add coverage, prefer a focused test or a new small fixture;
 change existing baseline values only when a documented protocol decision requires
 it. Consumer examples live in the consumer guide and are validated separately.
+
+## Current v3
+
+- v3/single-layer.json: unified one-layer structure, Unicode, colors, and transforms.
+- v3/layer-stack.json: ordered independent grids and presentation settings.
+
+These are private fixed test inputs, excluded from all package entry points and tarballs.

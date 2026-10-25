@@ -18,7 +18,7 @@ Package releases and on-disk versions are independent. Preserve the meaning of
 `textmode.document@2.0.0`, including its selected/all distinction and legacy
 `canvas` field. A new document version needs an explicit reader, specification,
 schema, and compatibility tests before it is accepted. Do not infer support for
-future `2.x` files. Namespaced or required extensions need a future design.
+future document versions. Namespaced or required extensions need a future design.
 
 Keep published versioned schemas stable. Documentation annotations may improve;
 constraint or semantic changes require a compatibility review and explicit
@@ -38,28 +38,24 @@ and decoder. Keep syntax fragments in the specification clearly labeled. Run
 an isolated packed-package check. The docs build disables browser sketch checks
 because this package has no browser gallery.
 
-## Publication is deferred
+## npm releases
 
-No npm release or publish automation is included in this refactor. Package version
-`1.0.0` identifies the prepared package, not a completed registry publication.
+The package is prepared for npm as `@textmode/document`. Its package version is
+independent of the on-disk `textmode.document@3.0.0` format version. A package
+release does not change the document format.
 
-Until the package is published, the exporter pins this repository at an exact Git
-commit. npm builds Git dependencies through the `prepare` script and creates the
-lockfile through normal installation. This keeps clean installs reproducible
-without a local directory, manual symlink, or unpublished registry URL.
+Before publishing, run `npm run check` and inspect `npm pack --dry-run`. Confirm
+that the archive contains the runtime, declarations, schemas, and consumer docs,
+and excludes fixtures and tests. This repository has no automated npm publish
+workflow.
 
-The source repository is currently private. Local installs need authenticated Git
-with repository read access. CI in another repository needs a read credential for
-this private repository; its default GitHub token does not grant cross-repository
-access. Configure that access before enabling downstream CI for this dependency.
-Do not place credentials in a dependency URL or commit them.
+The local v3 integration uses npm-managed `file:` directory dependencies. Run
+`npm install` and build this package, then install/build the sibling exporter,
+then install/build the apps. npm does not support a `local:` URL protocol. These
+references are temporary. Downstream CI and development using these references
+require sibling checkouts.
+No publishing, release tags, or deployment is part of this refactor.
 
-Packed verification can use `TEXTMODE_DOCUMENT_TARBALL` to override the Git source
-with a local tarball in an isolated consumer. The tarball is test input and is
-not committed.
-
-When publication is requested separately, publish the protocol first, replace the
-exporter's Git dependency with the exact registry version, and regenerate its
-lockfile with npm. Exporter builds generate compatibility schemas from the
-installed package; do not commit those generated assets. The beta migration note
-must call out the removed fixture imports without changing document version 2.0.0.
+Version 3 has one layer collection. Preserve the v2 schema and existing fixture
+values. Review both visual guides when changing documentation; the v2 guide is
+a reference to the old wire format, while the v3 guide explains current output.

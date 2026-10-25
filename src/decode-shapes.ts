@@ -25,15 +25,15 @@ import {
 } from './validation.js';
 import type { DecodeContext, UnknownRecord } from './validation.js';
 import type {
-	CanonicalTextmodeAllDocument,
+	CanonicalTextmodeDocument,
 	CanonicalTextmodeCell,
 	CanonicalTextmodeCellCollection,
 	CanonicalTextmodeDocumentLayer,
-	CanonicalTextmodeSelectedDocument,
 	TextmodeDocumentGrid,
+	TextmodeV2DocumentLayer,
 } from './types/index.js';
 
-export function decodeSelectedDocument(root: UnknownRecord, context: DecodeContext): CanonicalTextmodeSelectedDocument {
+export function decodeSelectedDocument(root: UnknownRecord, context: DecodeContext): CanonicalTextmodeDocument {
 	const canvas = decodeCanvas(root.canvas, '$.canvas');
 	const grid = decodeGrid(root.grid, '$.grid');
 	assertCanvasMatchesGrid(canvas, grid, '$.canvas');
@@ -42,20 +42,26 @@ export function decodeSelectedDocument(root: UnknownRecord, context: DecodeConte
 	return {
 		format: TEXTMODE_DOCUMENT_FORMAT,
 		formatVersion: TEXTMODE_DOCUMENT_FORMAT_VERSION,
-		target: 'selected',
 		...(root.metadata === undefined
 			? {}
 			: { metadata: decodeMetadata(root.metadata, '$.metadata', context.limits) }),
-		canvas,
-		grid,
-		layer: {
-			id: decodeLayerId(layer.id, '$.layer.id', context.limits),
-			cells: decodeCells(layer.cells, grid, '$.layer.cells', context),
-		},
+		layers: [
+			{
+				visible: true,
+				opacity: 1,
+				blendMode: 'normal',
+				offsetX: 0,
+				offsetY: 0,
+				rotationZ: 0,
+				grid,
+				id: decodeLayerId(layer.id, '$.layer.id', context.limits),
+				cells: decodeCells(layer.cells, grid, '$.layer.cells', context),
+			},
+		],
 	};
 }
 
-export function decodeAllDocument(root: UnknownRecord, context: DecodeContext): CanonicalTextmodeAllDocument {
+export function decodeAllDocument(root: UnknownRecord, context: DecodeContext): CanonicalTextmodeDocument {
 	const canvas = decodeCanvas(root.canvas, '$.canvas');
 	const layersValue = requireArray(root.layers, '$.layers');
 	if (layersValue.length === 0) {
@@ -69,24 +75,45 @@ export function decodeAllDocument(root: UnknownRecord, context: DecodeContext): 
 		);
 	}
 
-	const layers = layersValue.map((value, index) => decodeLayer(value, `$.layers[${index}]`, context));
-	assertCanvasMatchesGrid(canvas, layers[0].grid, '$.canvas');
+	const decodedLayers = layersValue.map((value, index) => decodeV2Layer(value, `$.layers[${index}]`, context));
+	assertCanvasMatchesGrid(canvas, decodedLayers[0].grid, '$.canvas');
 
 	return {
 		format: TEXTMODE_DOCUMENT_FORMAT,
 		formatVersion: TEXTMODE_DOCUMENT_FORMAT_VERSION,
-		target: 'all',
 		...(root.metadata === undefined
 			? {}
 			: { metadata: decodeMetadata(root.metadata, '$.metadata', context.limits) }),
-		canvas,
-		layers,
+		layers: decodedLayers,
 	};
 }
 
-function decodeLayer(value: unknown, path: string, context: DecodeContext): CanonicalTextmodeDocumentLayer {
+function decodeV2Layer(
+	value: unknown,
+	path: string,
+	context: DecodeContext
+): TextmodeV2DocumentLayer & { cells: CanonicalTextmodeCellCollection } {
 	const layer = requireRecord(value, path);
 	const grid = decodeGrid(layer.grid, `${path}.grid`);
+
+	return {
+		id: decodeLayerId(layer.id, `${path}.id`, context.limits),
+		visible: requireBoolean(layer.visible, `${path}.visible`),
+		opacity: requireNumberInRange(layer.opacity, `${path}.opacity`, 0, 1),
+		blendMode: requireBoundedString(layer.blendMode, `${path}.blendMode`, context.limits.maxMetadataStringLength),
+		offsetX: requireFiniteNumber(layer.offsetX, `${path}.offsetX`),
+		offsetY: requireFiniteNumber(layer.offsetY, `${path}.offsetY`),
+		rotationZ: requireFiniteNumber(layer.rotationZ, `${path}.rotationZ`),
+		grid,
+		cells: decodeCells(layer.cells, grid, `${path}.cells`, context),
+	};
+}
+
+function decodeV3Layer(value: unknown, path: string, context: DecodeContext): CanonicalTextmodeDocumentLayer {
+	const layer = requireRecord(value, path);
+	const grid = decodeGrid(layer.grid, `${path}.grid`);
+	checkedProduct(grid.cols, grid.cellWidth, `${path}.grid.cellWidth`);
+	checkedProduct(grid.rows, grid.cellHeight, `${path}.grid.cellHeight`);
 
 	return {
 		id: decodeLayerId(layer.id, `${path}.id`, context.limits),
@@ -168,5 +195,29 @@ function decodeCell(
 			flipY: requireBoolean(transform.flipY, `${path}.transform.flipY`),
 			rotation: normalizeRotation(requireFiniteNumber(transform.rotation, `${path}.transform.rotation`)),
 		},
+	};
+}
+
+/** Decode the current unified shape; obsolete structural fields are reserved. */
+export function decodeV3Document(root: UnknownRecord, context: DecodeContext): CanonicalTextmodeDocument {
+	for (const key of ['target', 'layer', 'grid', 'canvas']) {
+		if (Object.prototype.hasOwnProperty.call(root, key))
+			fail('INVALID_DOCUMENT', `Obsolete v3 root field: ${key}.`, `$.${key}`);
+	}
+	const values = requireArray(root.layers, '$.layers');
+	if (values.length === 0) fail('INVALID_DOCUMENT', 'A document must contain at least one layer.', '$.layers');
+	if (values.length > context.limits.maxLayers)
+		fail(
+			'LIMIT_EXCEEDED',
+			`Layer count ${values.length} exceeds the configured limit ${context.limits.maxLayers}.`,
+			'$.layers'
+		);
+	return {
+		format: TEXTMODE_DOCUMENT_FORMAT,
+		formatVersion: TEXTMODE_DOCUMENT_FORMAT_VERSION,
+		...(root.metadata === undefined
+			? {}
+			: { metadata: decodeMetadata(root.metadata, '$.metadata', context.limits) }),
+		layers: values.map((value, index) => decodeV3Layer(value, `$.layers[${index}]`, context)),
 	};
 }

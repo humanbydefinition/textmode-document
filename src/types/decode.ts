@@ -10,6 +10,7 @@ export interface TextmodeDocumentLimits {
 
 export interface TextmodeDocumentDecodeOptions {
 	limits?: TextmodeDocumentLimits;
+	/** Accept textmode.layer v1; supported textmode.document v2 is always readable. */
 	acceptLegacy?: boolean;
 }
 
@@ -29,7 +30,7 @@ export interface TextmodeDocumentError {
 }
 
 export interface TextmodeDocumentWarning {
-	code: 'LEGACY_DOCUMENT_MIGRATED';
+	code: 'LEGACY_DOCUMENT_MIGRATED' | 'DOCUMENT_VERSION_MIGRATED';
 	message: string;
 }
 

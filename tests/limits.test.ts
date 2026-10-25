@@ -1,12 +1,12 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { decodeTextmodeDocument, parseJSON } from '../src/index.js';
-import type { TextmodeAllDocumentJSON, TextmodeSelectedDocumentJSON } from '../src/index.js';
+import type { TextmodeV2AllDocumentJSON, TextmodeV2SelectedDocumentJSON } from '../src/index.js';
 
-function selected(): TextmodeSelectedDocumentJSON {
+function selected(): TextmodeV2SelectedDocumentJSON {
 	return JSON.parse(
 		readFileSync(new URL('fixtures/v2/selected.json', import.meta.url), 'utf8')
-	) as TextmodeSelectedDocumentJSON;
+	) as TextmodeV2SelectedDocumentJSON;
 }
 
 describe('resource limits and canonical output', () => {
@@ -16,9 +16,9 @@ describe('resource limits and canonical output', () => {
 		Object.assign(input.layer.cells.rows[0][0], { futureHint: true });
 		const result = decodeTextmodeDocument(input);
 		expect(result.ok).toBe(true);
-		if (!result.ok || result.document.target !== 'selected') return;
+		if (!result.ok) return;
 		expect(result.document).not.toHaveProperty('futureHint');
-		expect(result.document.layer.cells.rows[0][0]).not.toHaveProperty('futureHint');
+		expect(result.document.layers[0].cells.rows[0][0]).not.toHaveProperty('futureHint');
 		expect(input).toHaveProperty('futureHint', true);
 	});
 
@@ -34,7 +34,7 @@ describe('resource limits and canonical output', () => {
 	it('applies the layer budget before decoding stack contents', () => {
 		const input = JSON.parse(
 			readFileSync(new URL('fixtures/v2/all.json', import.meta.url), 'utf8')
-		) as TextmodeAllDocumentJSON;
+		) as TextmodeV2AllDocumentJSON;
 		expect(decodeTextmodeDocument(input, { limits: { maxLayers: 1 } })).toMatchObject({
 			ok: false,
 			error: { code: 'LIMIT_EXCEEDED', path: '$.layers' },
@@ -75,12 +75,12 @@ describe('resource limits and canonical output', () => {
 	it('preserves supported producer values and unrecognized blend-mode names', () => {
 		const input = JSON.parse(
 			readFileSync(new URL('fixtures/v2/all.json', import.meta.url), 'utf8')
-		) as TextmodeAllDocumentJSON;
+		) as TextmodeV2AllDocumentJSON;
 		input.layers[0].blendMode = 'custom-app-mode';
 		input.layers[0].rotationZ = -450;
 		const result = decodeTextmodeDocument(input);
 		expect(result.ok).toBe(true);
-		if (!result.ok || result.document.target !== 'all') return;
+		if (!result.ok) return;
 		expect(result.document.layers[0]).toMatchObject({ blendMode: 'custom-app-mode', rotationZ: -450 });
 	});
 

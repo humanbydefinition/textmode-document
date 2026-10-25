@@ -4,12 +4,6 @@ import type {
 	TEXTMODE_OBJECT_ROWS_ENCODING,
 } from '../constants.js';
 
-/**
- * Scope encoded by a textmode document.
- *
- * @category JSON document data
- */
-export type TextmodeDocumentTarget = 'selected' | 'all';
 /** Format discriminator encoded in a document. */
 export type TextmodeDocumentFormat = typeof TEXTMODE_DOCUMENT_FORMAT;
 /** Current on-disk format version, independent of the npm package version. */
@@ -67,24 +61,6 @@ export interface TextmodeDocumentMetadata {
 	};
 }
 
-export interface TextmodeSelectedDocumentLayer {
-	id: string;
-	cells: TextmodeDocumentCellCollection;
-}
-
-export interface TextmodeSelectedDocumentJSON {
-	format: TextmodeDocumentFormat;
-	formatVersion: TextmodeDocumentVersion;
-	target: 'selected';
-	metadata?: TextmodeDocumentMetadata;
-	canvas: {
-		width: number;
-		height: number;
-	};
-	grid: TextmodeDocumentGrid;
-	layer: TextmodeSelectedDocumentLayer;
-}
-
 export interface TextmodeDocumentLayer {
 	id: string;
 	visible: boolean;
@@ -97,21 +73,10 @@ export interface TextmodeDocumentLayer {
 	cells: TextmodeDocumentCellCollection;
 }
 
-export interface TextmodeAllDocumentJSON {
+/** One portable document with one or more ordered layers, bottom first. */
+export interface TextmodeDocumentJSON {
 	format: TextmodeDocumentFormat;
 	formatVersion: TextmodeDocumentVersion;
-	target: 'all';
 	metadata?: TextmodeDocumentMetadata;
-	canvas: {
-		width: number;
-		height: number;
-	};
 	layers: TextmodeDocumentLayer[];
 }
-
-/**
- * JSON document produced by the selected-layer or layer-stack exporter.
- *
- * @category JSON document data
- */
-export type TextmodeDocumentJSON = TextmodeSelectedDocumentJSON | TextmodeAllDocumentJSON;

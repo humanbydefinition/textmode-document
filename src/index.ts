@@ -2,7 +2,7 @@
  * Dependency-free textmode document protocol codec.
  *
  * This entry point contains no DOM, renderer, textmode.js, or media encoder
- * dependencies. It decodes every valid v2 document variant; product-specific
+ * dependencies. It decodes v3 and migrates supported v1/v2 documents; product-specific
  * import policy belongs to callers.
  *
  * @packageDocumentation
@@ -20,16 +20,17 @@ export {
 export { decodeTextmodeDocument, parseTextmodeDocumentJSON } from './decode.js';
 export { parseJSON } from './parse.js';
 export type {
-	CanonicalTextmodeAllDocument,
 	CanonicalTextmodeCell,
 	CanonicalTextmodeCellCollection,
 	CanonicalTextmodeDocument,
 	CanonicalTextmodeDocumentLayer,
-	CanonicalTextmodeSelectedDocument,
 	JSONParseResult,
+	TextmodeV2SelectedDocumentLayer,
+	TextmodeV2SelectedDocumentJSON,
+	TextmodeV2AllDocumentJSON,
+	TextmodeV2DocumentLayer,
 	LegacyTextmodeAllDocumentJSON,
 	LegacyTextmodeSelectedDocumentJSON,
-	TextmodeAllDocumentJSON,
 	TextmodeDocumentDecodeOptions,
 	TextmodeDocumentDecodeResult,
 	TextmodeDocumentCell,
@@ -46,9 +47,6 @@ export type {
 	TextmodeDocumentMetadata,
 	TextmodeDocumentParseResult,
 	TextmodeDocumentRGBAColor,
-	TextmodeDocumentTarget,
 	TextmodeDocumentVersion,
 	TextmodeDocumentWarning,
-	TextmodeSelectedDocumentJSON,
-	TextmodeSelectedDocumentLayer,
 } from './types/index.js';

@@ -26,12 +26,15 @@ try {
 		path.join(temporary, 'check.mjs'),
 		`import assert from 'node:assert/strict';
 import * as protocol from '@textmode/document';
-import schema from '@textmode/document/schema/2.0' with { type: 'json' };
+import schema from '@textmode/document/schema/3.0' with { type: 'json' };
 assert.equal(typeof globalThis.document, 'undefined');
-assert.equal(protocol.TEXTMODE_DOCUMENT_FORMAT_VERSION, '2.0.0');
+assert.equal(protocol.TEXTMODE_DOCUMENT_FORMAT_VERSION, '3.0.0');
 assert.equal(protocol.parseTextmodeDocumentJSON('{').error.code, 'INVALID_JSON');
-assert.equal(schema.$id, 'https://textmode.art/schemas/textmode-document-2.0.schema.json');
-assert.equal(schema.oneOf.length, 2);
+assert.equal(schema.$id, 'https://textmode.art/schemas/textmode-document-3.0.schema.json');
+assert.equal(schema.type, 'object');
+assert.deepEqual(schema.required, ['format', 'formatVersion', 'layers']);
+const v2 = await import('@textmode/document/schema/2.0', {with: {type: 'json'}});
+assert.equal(v2.default.oneOf.length, 2);
 assert.equal('JSONCellCollection' in protocol, false);
 assert.throws(() => import.meta.resolve('@textmode/document/fixtures/v2/selected.json'));
 `
@@ -46,8 +49,11 @@ assert.throws(() => import.meta.resolve('@textmode/document/fixtures/v2/selected
 		path.join(temporary, 'check.mts'),
 		`export type { ${names} } from '@textmode/document';
 import schema from '@textmode/document/schema/2.0';
+import v3Schema from '@textmode/document/schema/3.0';
 const identity: unknown = schema.$id;
+const v3Identity: unknown = v3Schema.$id;
 void identity;
+void v3Identity;
 `
 	);
 	execFileSync(

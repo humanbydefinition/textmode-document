@@ -59,8 +59,8 @@ describe('textmode document contract', () => {
 		expect(result.ok).toBe(true);
 		if (!result.ok) return;
 
-		expect(result.document.target).toBe(target);
-		expect(result.warnings.length > 0).toBe(isLegacy);
+		expect(result.document.layers.length).toBe(target === 'selected' || fixturePath.startsWith('legacy/') ? 1 : 2);
+		expect(result.warnings[0].code).toBe(isLegacy ? 'LEGACY_DOCUMENT_MIGRATED' : 'DOCUMENT_VERSION_MIGRATED');
 	});
 
 	it.each([
@@ -120,10 +120,10 @@ describe('textmode document contract', () => {
 	it('keeps the Unicode fixture’s odd/even grid, alpha, Unicode, transforms, and empty-cell semantics', () => {
 		const result = decodeTextmodeDocument(readFixture('v2/selected-unicode-alpha-transforms.json'));
 		expect(result.ok).toBe(true);
-		if (!result.ok || result.document.target !== 'selected') return;
+		if (!result.ok) return;
 
-		expect(result.document.grid).toMatchObject({ cols: 3, rows: 2 });
-		const cells = result.document.layer.cells.rows.flat();
+		expect(result.document.layers[0].grid).toMatchObject({ cols: 3, rows: 2 });
+		const cells = result.document.layers[0].cells.rows.flat();
 		expect(cells).toEqual(
 			expect.arrayContaining([
 				expect.objectContaining({

@@ -57,25 +57,25 @@ describe('textmode document codec', () => {
 	it('decodes and canonicalizes a selected v2 cell snapshot', () => {
 		const result = decodeTextmodeDocument(selectedFixture());
 		expect(result.ok).toBe(true);
-		if (!result.ok || result.document.target !== 'selected') return;
+		if (!result.ok) return;
 
-		expect(result.warnings).toEqual([]);
+		expect(result.warnings).toEqual([expect.objectContaining({ code: 'DOCUMENT_VERSION_MIGRATED' })]);
 		expect(result.document.format).toBe(TEXTMODE_DOCUMENT_FORMAT);
 		expect(result.document.formatVersion).toBe(TEXTMODE_DOCUMENT_FORMAT_VERSION);
-		expect(result.document.layer.cells.rows[0][0].foreground).toEqual({
+		expect(result.document.layers[0].cells.rows[0][0].foreground).toEqual({
 			r: 255,
 			g: 0,
 			b: 0,
 			a: 255,
 		});
-		expect(result.document.layer.cells.rows[0][1].character).toBe('😀');
-		expect(result.document.layer.cells.rows[0][1].transform.rotation).toBe(0);
+		expect(result.document.layers[0].cells.rows[0][1].character).toBe('😀');
+		expect(result.document.layers[0].cells.rows[0][1].transform.rotation).toBe(0);
 	});
 
 	it('decodes all-layer documents without applying editor import policy', () => {
 		const result = decodeTextmodeDocument(readFixture('v2/all.json'));
 		expect(result.ok).toBe(true);
-		if (!result.ok || result.document.target !== 'all') return;
+		if (!result.ok) return;
 
 		expect(result.document.layers).toHaveLength(2);
 		expect(result.document.layers.map((layer) => layer.id)).toEqual(['base', 'accent']);
@@ -99,7 +99,7 @@ describe('textmode document codec', () => {
 		expect(result.ok).toBe(true);
 		if (!result.ok) return;
 
-		expect(result.document.target).toBe(target);
+		expect(result.document.layers.length).toBe(target === 'selected' || fixture.startsWith('legacy/') ? 1 : 2);
 		expect(result.document.format).toBe(TEXTMODE_DOCUMENT_FORMAT);
 		expect(result.document.formatVersion).toBe(TEXTMODE_DOCUMENT_FORMAT_VERSION);
 		expect(result.warnings).toEqual([expect.objectContaining({ code: 'LEGACY_DOCUMENT_MIGRATED' })]);
@@ -165,8 +165,8 @@ describe('textmode document codec', () => {
 		rgb.layer.cells.rows[0][0].foreground = '#123456';
 		const result = decodeTextmodeDocument(rgb);
 		expect(result.ok).toBe(true);
-		if (!result.ok || result.document.target !== 'selected') return;
-		expect(result.document.layer.cells.rows[0][0].foreground).toEqual({
+		if (!result.ok) return;
+		expect(result.document.layers[0].cells.rows[0][0].foreground).toEqual({
 			r: 18,
 			g: 52,
 			b: 86,
@@ -197,8 +197,8 @@ describe('textmode document codec', () => {
 		document.layer.cells.rows[0][0].character = character;
 		const result = decodeTextmodeDocument(document);
 		expect(result.ok).toBe(true);
-		if (!result.ok || result.document.target !== 'selected') return;
-		expect(result.document.layer.cells.rows[0][0].character).toBe(character);
+		if (!result.ok) return;
+		expect(result.document.layers[0].cells.rows[0][0].character).toBe(character);
 	});
 
 	it('rejects unpaired surrogates and bounded glyph-string violations', () => {

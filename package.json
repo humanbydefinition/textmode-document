@@ -1,6 +1,6 @@
 {
 	"name": "@textmode/document",
-	"version": "1.0.0",
+	"version": "2.0.0-dev.0",
 	"description": "Portable textmode document format, JSON Schema, types, and dependency-free decoder.",
 	"license": "CC0-1.0",
 	"author": "humanbydefinition <hello@textmode.art> (https://code.textmode.art)",
@@ -32,6 +32,10 @@
 		"./schema/2.0": {
 			"types": "./schemas/2.0/schema.d.ts",
 			"default": "./schemas/2.0/schema.json"
+		},
+		"./schema/3.0": {
+			"types": "./schemas/3.0/schema.d.ts",
+			"default": "./schemas/3.0/schema.json"
 		}
 	},
 	"files": [
@@ -39,7 +43,9 @@
 		"dist/**/*.d.ts",
 		"schemas/2.0/schema.json",
 		"schemas/2.0/schema.d.ts",
-		"docs/*.md"
+		"docs/*.md",
+		"schemas/3.0/schema.json",
+		"schemas/3.0/schema.d.ts"
 	],
 	"publishConfig": {
 		"access": "public"

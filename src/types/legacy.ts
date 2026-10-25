@@ -3,12 +3,8 @@ import type {
 	LEGACY_TEXTMODE_LAYER_FORMAT,
 	LEGACY_TEXTMODE_SELECTED_VERSION,
 } from '../constants.js';
-import type {
-	TextmodeDocumentMetadata,
-	TextmodeDocumentGrid,
-	TextmodeSelectedDocumentLayer,
-	TextmodeDocumentLayer,
-} from './wire.js';
+import type { TextmodeDocumentMetadata, TextmodeDocumentGrid } from './wire.js';
+import type { TextmodeV2DocumentLayer, TextmodeV2SelectedDocumentLayer } from './v2.js';
 
 export interface LegacyTextmodeSelectedDocumentJSON {
 	$schema?: string;
@@ -17,7 +13,7 @@ export interface LegacyTextmodeSelectedDocumentJSON {
 	metadata?: TextmodeDocumentMetadata;
 	canvas: { width: number; height: number };
 	grid: TextmodeDocumentGrid;
-	layer: TextmodeSelectedDocumentLayer;
+	layer: TextmodeV2SelectedDocumentLayer;
 }
 
 export interface LegacyTextmodeAllDocumentJSON {
@@ -26,5 +22,5 @@ export interface LegacyTextmodeAllDocumentJSON {
 	formatVersion: typeof LEGACY_TEXTMODE_ALL_VERSION;
 	metadata?: TextmodeDocumentMetadata;
 	canvas: { width: number; height: number };
-	layers: TextmodeDocumentLayer[];
+	layers: TextmodeV2DocumentLayer[];
 }

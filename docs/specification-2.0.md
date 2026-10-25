@@ -1,5 +1,9 @@
 # Textmode document format 2.0
 
+> Versioned v2 reference. Current v3 documentation is in the
+> [v3 specification](specification-3.0.md) and [visual guide](schema-3.0.md).
+> The current decoder validates these older shapes and migrates them to v3.
+
 ## Status
 
 This document defines `textmode.document` version `2.0.0`. The canonical

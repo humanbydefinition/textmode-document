@@ -5,7 +5,7 @@ import {
 	TEXTMODE_DOCUMENT_FORMAT,
 	TEXTMODE_DOCUMENT_FORMAT_VERSION,
 } from './constants.js';
-import { decodeAllDocument, decodeSelectedDocument } from './decode-shapes.js';
+import { decodeAllDocument, decodeSelectedDocument, decodeV3Document } from './decode-shapes.js';
 import { parseJSON } from './parse.js';
 import { DocumentDecodeFailure, fail, failure, requireRecord, requireString, resolveLimits } from './validation.js';
 import type { DecodeContext, UnknownRecord } from './validation.js';
@@ -44,7 +44,10 @@ export function decodeTextmodeDocument(
 			return {
 				ok: true,
 				document: decodeCurrentDocument(root, context),
-				warnings: [],
+				warnings:
+					root.formatVersion === '2.0.0'
+						? [{ code: 'DOCUMENT_VERSION_MIGRATED', message: 'Migrated textmode.document 2.0.0 to 3.0.0.' }]
+						: [],
 			};
 		}
 
@@ -55,7 +58,7 @@ export function decodeTextmodeDocument(
 				warnings: [
 					{
 						code: 'LEGACY_DOCUMENT_MIGRATED',
-						message: 'Migrated a legacy textmode.layer document to textmode.document 2.0.0.',
+						message: 'Migrated a legacy textmode.layer document to textmode.document 3.0.0.',
 					},
 				],
 			};
@@ -91,7 +94,8 @@ export function parseTextmodeDocumentJSON(
 
 function decodeCurrentDocument(root: UnknownRecord, context: DecodeContext): CanonicalTextmodeDocument {
 	const version = requireString(root.formatVersion, '$.formatVersion');
-	if (version !== TEXTMODE_DOCUMENT_FORMAT_VERSION) {
+	if (version === TEXTMODE_DOCUMENT_FORMAT_VERSION) return decodeV3Document(root, context);
+	if (version !== '2.0.0') {
 		fail('UNSUPPORTED_VERSION', `Unsupported textmode.document version: ${version}.`, '$.formatVersion');
 	}
 

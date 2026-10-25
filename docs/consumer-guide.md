@@ -50,12 +50,13 @@ and an optional JSON path such as `$.layer.cells.rows[0][0].foreground`.
 
 Successful results contain `document` and `warnings`. A migrated legacy file
 returns `LEGACY_DOCUMENT_MIGRATED`. `acceptLegacy` defaults to `true`; set it to
-`false` to accept only current documents. App-specific failures, such as a missing
+`false` to reject textmode.layer v1. Supported textmode.document v2 remains readable
+and returns `DOCUMENT_VERSION_MIGRATED`; all successful results use v3. App-specific failures, such as a missing
 font or unsupported blend mode, belong to the app after protocol decoding.
 
 Every configured limit must be a positive safe integer. Invalid configuration
 throws `TypeError`; it is a programming error rather than a document failure.
-Limits and their defaults are listed in the [specification](specification-2.0.md#safety-limits).
+Limits and their defaults are listed in the [specification](specification-3.0.md#validation-budgets-and-compatibility).
 
 Check file bytes before reading. Parsing occurs before decoded-cell budgets can
 apply, so `maxCells` does not cap JSON parsing memory or input bytes. Use lower
@@ -71,7 +72,7 @@ It also cannot add missing font identity or recreate post-processing.
 Node 24 can import the schema with an import attribute:
 
 ```js
-import schema from '@textmode/document/schema/2.0' with { type: 'json' };
+import schema from '@textmode/document/schema/3.0' with { type: 'json' };
 ```
 
 Bundlers may use their own JSON import syntax. A filesystem-based tool can resolve
@@ -82,7 +83,7 @@ For example, with Ajv installed in the consumer:
 ```js
 import Ajv2020 from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
-import schema from '@textmode/document/schema/2.0' with { type: 'json' };
+import schema from '@textmode/document/schema/3.0' with { type: 'json' };
 
 const ajv = new Ajv2020({ validateFormats: true });
 addFormats(ajv, { mode: 'full' });
@@ -96,51 +97,64 @@ schema-valid document can fail decoding. Configurable decoder budgets can also
 differ from schema constraints: for example, a glyph limit above 64 does not
 change the published schema's `maxLength: 64`.
 
-## Complete selected document
+## Complete single-layer document
 
-A selected document contains cell data and grid metrics. It carries no layer
-presentation or font identity.
+A one-layer document uses the same layer structure as a stack. Font identity is
+chosen by the receiving application.
 
 ```json
 {
 	"format": "textmode.document",
-	"formatVersion": "2.0.0",
-	"target": "selected",
-	"canvas": { "width": 8, "height": 16 },
-	"grid": { "cols": 1, "rows": 1, "cellWidth": 8, "cellHeight": 16 },
-	"layer": {
-		"id": "base",
-		"cells": {
-			"encoding": "object-rows-v1",
-			"rows": [
-				[
-					{
-						"x": 0,
-						"y": 0,
-						"character": "A",
-						"foreground": "#ffffffff",
-						"background": "#00000000",
-						"transform": { "invert": false, "flipX": false, "flipY": false, "rotation": 0 }
-					}
+	"formatVersion": "3.0.0",
+	"layers": [
+		{
+			"visible": true,
+			"opacity": 1,
+			"blendMode": "normal",
+			"offsetX": 0,
+			"offsetY": 0,
+			"rotationZ": 0,
+			"grid": {
+				"cols": 1,
+				"rows": 1,
+				"cellWidth": 8,
+				"cellHeight": 16
+			},
+			"id": "base",
+			"cells": {
+				"encoding": "object-rows-v1",
+				"rows": [
+					[
+						{
+							"x": 0,
+							"y": 0,
+							"character": "A",
+							"foreground": "#ffffffff",
+							"background": "#00000000",
+							"transform": {
+								"invert": false,
+								"flipX": false,
+								"flipY": false,
+								"rotation": 0
+							}
+						}
+					]
 				]
-			]
+			}
 		}
-	}
+	]
 }
 ```
 
 ## Complete layer stack
 
-An `all` document contains one or more layers in stack order, bottom first.
-Each layer has its own grid and presentation values. The first grid determines
-the legacy root pixel extent; that extent does not specify a composite viewport.
+A document contains one or more layers in stack order, bottom first.
+Each layer has its own grid and presentation values. There is no root canvas or viewport; each layer defines its own grid.
 
 ```json
 {
 	"format": "textmode.document",
-	"formatVersion": "2.0.0",
-	"target": "all",
-	"canvas": { "width": 8, "height": 16 },
+	"formatVersion": "3.0.0",
 	"layers": [
 		{
 			"id": "base",
@@ -150,7 +164,12 @@ the legacy root pixel extent; that extent does not specify a composite viewport.
 			"offsetX": 0,
 			"offsetY": 0,
 			"rotationZ": 0,
-			"grid": { "cols": 1, "rows": 1, "cellWidth": 8, "cellHeight": 16 },
+			"grid": {
+				"cols": 1,
+				"rows": 1,
+				"cellWidth": 8,
+				"cellHeight": 16
+			},
 			"cells": {
 				"encoding": "object-rows-v1",
 				"rows": [
@@ -161,7 +180,12 @@ the legacy root pixel extent; that extent does not specify a composite viewport.
 							"character": "A",
 							"foreground": "#ffffffff",
 							"background": "#000000ff",
-							"transform": { "invert": false, "flipX": false, "flipY": false, "rotation": 0 }
+							"transform": {
+								"invert": false,
+								"flipX": false,
+								"flipY": false,
+								"rotation": 0
+							}
 						}
 					]
 				]
@@ -175,7 +199,12 @@ the legacy root pixel extent; that extent does not specify a composite viewport.
 			"offsetX": 4,
 			"offsetY": 0,
 			"rotationZ": 15,
-			"grid": { "cols": 1, "rows": 1, "cellWidth": 8, "cellHeight": 16 },
+			"grid": {
+				"cols": 1,
+				"rows": 1,
+				"cellWidth": 8,
+				"cellHeight": 16
+			},
 			"cells": {
 				"encoding": "object-rows-v1",
 				"rows": [
@@ -186,7 +215,12 @@ the legacy root pixel extent; that extent does not specify a composite viewport.
 							"character": "*",
 							"foreground": "#ff000080",
 							"background": "#00000000",
-							"transform": { "invert": false, "flipX": true, "flipY": false, "rotation": 90 }
+							"transform": {
+								"invert": false,
+								"flipX": true,
+								"flipY": false,
+								"rotation": 90
+							}
 						}
 					]
 				]
