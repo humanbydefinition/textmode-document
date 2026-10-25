@@ -61,11 +61,10 @@ are excluded from npm packages.
 
 ## Development
 
-Use Node 24 and npm. Run `npm ci`, then `npm run check`. The MIT-licensed
+Use Node 24 and npm. Run `npm ci`, then `npm run check`. The
 implementation was extracted from
 [`textmode.export.js`](https://github.com/humanbydefinition/textmode.export.js).
 
 ## License
 
-[MIT](LICENSE), copyright humanbydefinition. See the source repository history
-and the retained license for attribution.
+`@textmode/document` is dedicated to the public domain under [CC0 1.0 Universal](./LICENSE).
