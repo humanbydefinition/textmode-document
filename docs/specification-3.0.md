@@ -2,35 +2,33 @@
 
 ## Status and scope
 
-This specification defines `textmode.document@3.0.0`, maintained in
-`@textmode/document`. The npm package version is independent of the document
-version. The [schema](../schemas/3.0/schema.json) uses Draft 2020-12 and is
-available from `@textmode/document/schema/3.0`. Its `$id` is an identifier, not a
-promise of a hosted download URL.
+This specification defines `textmode.document@3.0.0`. The npm package version
+is independent of the document version. The [JSON Schema](../schemas/3.0/schema.json)
+uses Draft 2020-12 and is available as `@textmode/document/schema/3.0`. Its `$id`
+is an identifier and does not guarantee a hosted download.
 
-The format stores editable cell snapshots and ordered layers. Font identity,
-font assets, a document viewport, authored animation, editor project state,
-history, and post-processing are not represented.
+A document stores editable cells in ordered layers. It does not store font identity
+or assets, a viewport, animation, editor project state, history, or post-processing.
 
 ## Encoding and root
 
-Files are UTF-8 JSON objects. Producers should use unique object keys, safe-range
-integers, finite numbers, and uppercase timezone-qualified timestamps. Native
-`JSON.parse` does not detect duplicate keys; the last value wins. No duplicate-key
-detection is claimed. Filename suffix `.textmode.json` and MIME type
-`application/json` are hints; readers route by `format` and `formatVersion`.
+Files are UTF-8 JSON objects. Producers should use unique keys, safe integers,
+finite numbers, and uppercase, timezone-qualified timestamps. JavaScript's
+`JSON.parse` keeps the last value when a key is repeated; it does not report
+duplicates. The `.textmode.json` suffix and `application/json` MIME type are hints.
+Readers identify the format using `format` and `formatVersion`.
 
 The root requires `format: "textmode.document"`, `formatVersion: "3.0.0"`, and
 `layers`. Optional `metadata` is defined below. `layers` is a nonempty array in
 bottom-to-top order; there is no separate single-layer shape. Root `target`,
 `layer`, `grid`, and `canvas` are obsolete and invalid, including when null.
 
-Unknown ordinary object fields are allowed except these reserved root fields.
-The canonical decoder creates a new object and omits unknown fields. Decoding
-and reserializing does not preserve future extensions. Unknown tagged values of
-`format`, `formatVersion`, and cell `encoding` are rejected. Accept only explicitly
-supported versions; v3 does not define negotiation, required extensions, an
-extension registry, or automatic support for future 3.x versions.
+Unknown ordinary fields are allowed, except for the reserved root fields above.
+The decoder omits unknown fields from its canonical output, so decoding and
+reserializing does not preserve extensions. Readers reject unknown `format`,
+`formatVersion`, and cell `encoding` values. Accept only explicitly supported
+versions: v3 does not define version negotiation, required extensions, an
+extension registry, or automatic compatibility with future 3.x versions.
 
 ## Layer structure and presentation
 
@@ -53,10 +51,10 @@ The textmode.js producer names are `normal`, `additive`, `multiply`, `screen`,
 in the portable schema. Apps must not silently replace an unsupported meaningful
 mode with `normal`.
 
-Every `grid` requires positive safe integers `cols`, `rows`, `cellWidth`, and
-`cellHeight`. Cell count and grid pixel products must remain safe integers.
-Layers may have different grids. There is no root-grid inheritance or viewport
-inference. A layer's pixel extent is `cols × cellWidth` by `rows × cellHeight`.
+Each `grid` requires positive safe integers for `cols`, `rows`, `cellWidth`, and
+`cellHeight`. The cell count and pixel products must also be safe integers. Layers
+can have different grids. A layer's pixel extent is `cols × cellWidth` by
+`rows × cellHeight`. Do not infer a root grid or viewport.
 
 ## Cells and coordinates
 
@@ -65,17 +63,17 @@ Every `cells` object requires `encoding: "object-rows-v1"` and `rows`.
 including transparent cells, is present. A cell requires `x`, `y`, `character`,
 `foreground`, `background`, and `transform`.
 
-Coordinates are zero-based nonnegative safe integers. For `rows[y][x]`, the
-stored coordinates must equal x and y. Consumers reject disagreement rather than
-repair or reorder cells. These cross-field checks are enforced by the decoder.
+Coordinates are zero-based nonnegative safe integers. In `rows[y][x]`, the
+cell's stored `x` and `y` must match its array position. Consumers must reject a
+mismatch without repairing or reordering cells. The decoder enforces this rule.
 
 ## Glyphs, colors, and transforms
 
-`character` is a nonempty well-formed Unicode glyph string. It can contain a
-combining sequence or a joined emoji; it need not be one scalar value. Preserve
-it without Unicode normalization. Unpaired surrogates are invalid. The schema
-uses `minLength: 1` and `maxLength: 64`; the default decoder limit is 64 Unicode
-scalar values. Caller budgets do not alter the published schema.
+`character` is a nonempty, well-formed Unicode glyph string. It may contain
+multiple scalar values, such as a combining sequence or joined emoji. Preserve it
+without Unicode normalization. Unpaired surrogates are invalid. The schema uses
+`minLength: 1` and `maxLength: 64`; the default decoder limit is 64 Unicode scalar
+values. Changing a decoder limit does not change the published schema.
 
 Each color is `#RRGGBB`, `#RRGGBBAA`, or an object with required integer `r`, `g`,
 `b`, and `a` channels in [0, 255]. Six-digit notation implies alpha 255. Channels
@@ -83,12 +81,12 @@ are unpremultiplied; alpha 0 is transparent and 255 is opaque. Canonical output
 uses RGBA channel objects. A space with visible background remains meaningful;
 a cell is visually empty only when both foreground and background alpha are zero.
 
-Every transform requires boolean `invert`, `flipX`, and `flipY`, plus finite
-`rotation` in degrees. Canonical cell rotation is normalized to [0, 360): -90
-becomes 270 and 360 becomes 0. Layer rotation is preserved separately. Swapping
-colors is not a general substitute for inversion in the presence of alpha.
-Consumers must reject unsupported meaningful transforms rather than approximate
-them without an explicit product operation.
+Each transform requires boolean `invert`, `flipX`, and `flipY` values and a finite
+`rotation` in degrees. The decoder normalizes cell rotation to [0, 360): -90
+becomes 270 and 360 becomes 0. Layer rotation is separate. Swapping colors is
+not a general replacement for inversion when alpha is present. Consumers must
+reject unsupported meaningful transforms rather than approximate them without an
+explicit product operation.
 
 ## Metadata
 
@@ -104,9 +102,9 @@ validators; format annotations alone are insufficient.
 ## Validation, budgets, and compatibility
 
 The schema defines structure and local constraints. This specification defines
-meaning. The decoder additionally enforces row/grid agreement, redundant
-coordinates, safe products, well-formed Unicode, caller budgets, and canonical
-normalization. A schema-valid document may fail decoding.
+meaning. The decoder also checks row sizes, coordinates, safe products, Unicode,
+and caller limits, and normalizes output. A schema-valid document may still fail
+decoding.
 
 | Decoder limit             |    Default | Counting rule                                              |
 | ------------------------- | ---------: | ---------------------------------------------------------- |

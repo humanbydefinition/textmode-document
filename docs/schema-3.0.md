@@ -1,9 +1,8 @@
 # Visual guide to document format 3.0
 
-These Mermaid diagrams explain the current [JSON Schema](../schemas/3.0/schema.json).
-The [specification](specification-3.0.md) defines normative meaning; the
-[consumer guide](consumer-guide.md) contains complete documents. The diagrams
-are maintained documentation; review them with schema and specification changes.
+These diagrams show the structure of `textmode.document@3.0.0`. For the complete
+rules, see the [specification](specification-3.0.md) and [JSON Schema](../schemas/3.0/schema.json).
+The [consumer guide](consumer-guide.md) includes complete example documents.
 
 ## One shape for any layer count
 
@@ -20,10 +19,10 @@ flowchart TD
     Layer --> Cells["cells: encoding + dense rows"]
 ```
 
-All shown members are required except metadata. A one-layer file has one array
-entry. There is no root `target`, `layer`, `grid`, or `canvas`; those fields are
-rejected. Unknown ordinary fields are accepted and omitted from canonical output.
-IDs need not be unique. No font, viewport, or animation is inferred.
+All shown fields are required except metadata. A document with one layer has one
+array entry. Root `target`, `layer`, `grid`, and `canvas` fields are rejected.
+Other unknown fields are accepted and omitted from canonical output. IDs need not
+be unique. The format does not define a font, viewport, or animation.
 
 ## Grids and storage
 
@@ -38,9 +37,9 @@ flowchart TD
     Grid -. "decoder checks safe products and array agreement" .-> Coordinates
 ```
 
-Every grid position is stored, including fully transparent cells. Layers may
-have different dimensions and metrics; there is no root-grid fallback. The
-schema describes local shapes; the decoder checks array counts and coordinates.
+Every grid position is stored, including transparent cells. Layers can have
+different dimensions and cell sizes. The decoder checks row sizes and coordinates
+against each layer's grid.
 
 ## Layer presentation
 
@@ -111,12 +110,8 @@ flowchart TD
     Success --> Warnings["Migration warnings for older input"]
 ```
 
-The decoder does not require a schema-validator pass. It enforces the shared
-rules directly; the specification and schema are independent references. Default
-budgets are 16,777,216 cells, 4,096 layers, 1,024 UTF-16 units per ID, 64 scalar
-values per glyph, and 4,096 UTF-16 units per metadata string or blend-mode name.
-Invalid budgets throw TypeError; malformed data returns a failure. Parsing occurs
-before those budgets apply. Apps enforce input-byte limits and supported fonts,
-features, and placement. Unknown fields are omitted, so decoding is not an
-extension-preserving round trip. See the [v2 visual guide](schema-2.0.md) for
-older wire shapes.
+The decoder checks documents directly; a separate schema validation pass is
+optional. It omits unknown fields from canonical output. Applications must check
+input size before parsing and apply their own font, feature, and placement rules.
+See the [specification](specification-3.0.md#validation-budgets-and-compatibility)
+for default limits and the [v2 visual guide](schema-2.0.md) for older shapes.
