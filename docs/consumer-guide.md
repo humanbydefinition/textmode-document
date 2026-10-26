@@ -2,10 +2,11 @@
 
 ## Choose a decoder
 
-Use `parseTextmodeDocumentJSON(text, options)` when you already know the file is a
-textmode document. Use `parseJSON(text)` when several formats share a `.json`
-extension, then route by the parsed object's `format` and pass it to
-`decodeTextmodeDocument(value, options)`. A filename or MIME type is only a hint.
+Use `parseTextmodeDocumentJSON(text, options)` when you know the file is a
+textmode document. If your app accepts several JSON formats, use `parseJSON(text)`
+first. Check the parsed object's `format`, then pass textmode documents to
+`decodeTextmodeDocument(value, options)`. A filename or MIME type alone cannot
+identify the format.
 
 ```js
 import { parseJSON, decodeTextmodeDocument } from '@textmode/document';
@@ -29,14 +30,14 @@ if (!parsed.ok) {
 }
 ```
 
-`parseJSON` uses native `JSON.parse`. It does not detect duplicate object keys;
-the last value wins. Avoid duplicate keys when producing files. Syntax success
-alone says nothing about whether a value is a valid textmode document.
+`parseJSON` uses JavaScript's `JSON.parse`. If an object repeats a key, the last
+value wins. Producers should use unique keys. Valid JSON is not necessarily a
+valid textmode document.
 
 ## Handle results and budgets
 
-Malformed input returns `{ ok: false, error }`. Errors contain `code`, `message`,
-and an optional JSON path such as `$.layer.cells.rows[0][0].foreground`.
+Invalid input returns `{ ok: false, error }`. The error includes a `code`,
+`message`, and sometimes a JSON path, such as `$.layer.cells.rows[0][0].foreground`.
 
 | Code                   | Meaning                                                           |
 | ---------------------- | ----------------------------------------------------------------- |
@@ -48,24 +49,23 @@ and an optional JSON path such as `$.layer.cells.rows[0][0].foreground`.
 | `UNSUPPORTED_ENCODING` | The cell encoding is unsupported.                                 |
 | `LIMIT_EXCEEDED`       | A resource budget or safe numeric range is exceeded.              |
 
-Successful results contain `document` and `warnings`. A migrated legacy file
-returns `LEGACY_DOCUMENT_MIGRATED`. `acceptLegacy` defaults to `true`; set it to
-`false` to reject textmode.layer v1. Supported textmode.document v2 remains readable
-and returns `DOCUMENT_VERSION_MIGRATED`; all successful results use v3. App-specific failures, such as a missing
-font or unsupported blend mode, belong to the app after protocol decoding.
+Successful results contain a canonical v3 `document` and a `warnings` array.
+Migrated `textmode.layer` v1 files return `LEGACY_DOCUMENT_MIGRATED`. Set
+`acceptLegacy: false` to reject them; the default is `true`. Supported v2 files
+remain readable and return `DOCUMENT_VERSION_MIGRATED`.
 
-Every configured limit must be a positive safe integer. Invalid configuration
-throws `TypeError`; it is a programming error rather than a document failure.
-Limits and their defaults are listed in the [specification](specification-3.0.md#validation-budgets-and-compatibility).
+After decoding, your app must check its own requirements, such as available fonts
+and supported blend modes. The decoder normalizes known values and omits unknown
+properties, so decoding and serializing does not preserve extensions. The format
+does not store font identity or post-processing.
 
-Check file bytes before reading. Parsing occurs before decoded-cell budgets can
-apply, so `maxCells` does not cap JSON parsing memory or input bytes. Use lower
-app-specific budgets and check cancellation between file read, decode, and import.
-Large files can be decoded in a worker; the library itself is synchronous.
+Set limits to positive safe integers. Invalid limit configuration throws
+`TypeError`. See the [default limits](specification-3.0.md#validation-budgets-and-compatibility).
 
-Decoding preserves known values subject to normalization. It omits unknown
-properties, so decode-and-serialize is not a lossless round trip for extensions.
-It also cannot add missing font identity or recreate post-processing.
+Check file size before reading: decoder limits apply after JSON parsing and do not
+limit input bytes or parser memory. Choose budgets for your app and check for
+cancellation between reading, decoding, and importing. The library is synchronous;
+you can decode large files in a worker.
 
 ## Use JSON Schema
 
@@ -75,8 +75,8 @@ Node 24 can import the schema with an import attribute:
 import schema from '@textmode/document/schema/3.0' with { type: 'json' };
 ```
 
-Bundlers may use their own JSON import syntax. A filesystem-based tool can resolve
-the same package subpath and read it locally. All schema references are local.
+Bundlers may use different JSON import syntax. Tools that read files can resolve
+the same package subpath. All references within the schema are local.
 
 For example, with Ajv installed in the consumer:
 
@@ -90,17 +90,16 @@ addFormats(ajv, { mode: 'full' });
 const validate = ajv.compile(schema);
 ```
 
-Enable date-time format assertions to check timestamps. Schema validation checks
-structure and local constraints; decoding also checks row/grid agreement,
-coordinates, pixel extents, Unicode well-formedness, and resource budgets. A
-schema-valid document can fail decoding. Configurable decoder budgets can also
-differ from schema constraints: for example, a glyph limit above 64 does not
-change the published schema's `maxLength: 64`.
+Enable date-time format assertions to check timestamps. The schema checks
+structure and local constraints. The decoder also checks relationships such as
+row sizes and coordinates, plus Unicode and resource limits. A schema-valid file
+can still fail decoding. Changing a decoder limit does not change the published
+schema; for example, the schema's glyph `maxLength` remains 64.
 
 ## Complete single-layer document
 
-A one-layer document uses the same layer structure as a stack. Font identity is
-chosen by the receiving application.
+A single-layer document uses the same structure as a layer stack. The receiving
+application chooses the font.
 
 ```json
 {
@@ -148,8 +147,8 @@ chosen by the receiving application.
 
 ## Complete layer stack
 
-A document contains one or more layers in stack order, bottom first.
-Each layer has its own grid and presentation values. There is no root canvas or viewport; each layer defines its own grid.
+Layers appear in stack order, with the bottom layer first. Each layer has its own
+grid and presentation values. The document has no root canvas or viewport.
 
 ```json
 {
