@@ -15,11 +15,10 @@ The package defines a unified `textmode.document@3.0.0` structure and reads v2 p
 
 ## Install
 
-This checkout prepares unpublished v3 support. From a sibling consumer project,
-install the local package with npm:
+Install the published package from npm:
 
 ```sh
-npm install ../textmode-document
+npm install @textmode/document
 ```
 
 The JavaScript interface is ESM-only and has no runtime dependencies. It does not require `textmode.js`, a renderer, DOM globals, or media encoders.
@@ -47,7 +46,7 @@ Successful decoding returns a new canonical document. Colors use RGBA objects, c
 - [Consumer guide](docs/consumer-guide.md): parsing, schema imports, error handling, resource budgets, and complete examples.
 - [Format 3.0 specification](docs/specification-3.0.md): the language-neutral contract for producers and consumers.
 - [JSON Schema visual guide](docs/schema-3.0.md): diagrams of document shapes, layers, cells, and validation responsibilities.
-- [Maintenance guide](docs/maintenance.md): ownership, compatibility, tests, and release policy.
+- [Format 2.0 reference](docs/specification-2.0.md) and [visual guide](docs/schema-2.0.md): the older wire format.
 - [JSON Schema](schemas/3.0/schema.json): also available from `@textmode/document/schema/3.0`.
 
 The schema identifier is an identifier. It does not promise that the schema is hosted at that URL. Test fixtures are private test data. They are not package exports and are excluded from npm packages.
@@ -61,16 +60,3 @@ Read the [Contributing Guide](./CONTRIBUTING.md) to get started.
 ## License
 
 `@textmode/document` is dedicated to the public domain under [CC0 1.0 Universal](./LICENSE).
-
-## Local v3 development
-
-This checkout prepares unpublished package version `2.0.0-dev.0`. Keep sibling
-checkouts of `textmode-document`, `textmode.export.js`, `create.textmode.art`, and
-`export.textmode.art`. Build this package first, then the exporter, then the apps.
-Consumers use npm `file:../textmode-document` directory dependencies; run npm
-install in each repository after rebuilding dependencies. Do not publish these
-local dependency manifests. Downstream CI using these local dependencies requires
-the same sibling layout.
-
-The [v2 specification](docs/specification-2.0.md) and schema import
-`@textmode/document/schema/2.0` remain available for existing files.
