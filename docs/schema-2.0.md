@@ -1,29 +1,17 @@
-# Visual guide to the JSON Schema
+# Visual guide to document format 2.0
 
 > Versioned v2 reference. Current v3 documentation is in the
 > [v3 specification](specification-3.0.md) and [visual guide](schema-3.0.md).
 > The current decoder validates these older shapes and migrates them to v3.
 
-This page gives a visual map of `textmode.document@2.0.0`. It explains the
-schema's structure and the main relationships between fields. It is an aid for
-readers, not a second schema or a replacement for the format rules.
-
-- [JSON Schema Draft 2020-12](../schemas/2.0/schema.json) is the machine-readable
-  structural contract.
-- [Format 2.0 specification](specification-2.0.md) defines field meaning and
-  cross-field requirements.
-- [Consumer guide](consumer-guide.md) explains parsing, decoding, errors, and
-  caller-specific safety limits.
-
-The Mermaid diagrams are maintained as documentation. When the schema or
-specification changes, review this page for accuracy. The schema remains the
-source of truth for its structural constraints.
+These diagrams show the structure of `textmode.document@2.0.0`. For the complete
+rules, see the [v2 specification](specification-2.0.md) and [JSON Schema](../schemas/2.0/schema.json).
+For decoding examples and error handling, see the [consumer guide](consumer-guide.md).
 
 ## Document shapes
 
-The root schema accepts exactly one of two shapes. Both shapes identify the
-format and version, carry the legacy `canvas` extent, and may include
-informational metadata. The `target` value selects which document shape applies.
+A v2 document has one of two shapes. Both include the format, version, and
+`canvas` extent; metadata is optional. The `target` field selects the shape.
 
 ```mermaid
 flowchart TD
@@ -54,9 +42,8 @@ flowchart TD
 | `layers`        | All only      | Nonempty ordered stack of layers, bottom first.                                      |
 | `metadata`      | No            | Creation timestamp and producer identity. If present, both members are required.     |
 
-Ordinary objects allow unknown properties. The canonical decoder creates a new
-object from known fields and omits unknown properties. Decoding and reserializing
-therefore does not preserve future or app-specific fields.
+Ordinary objects allow unknown fields. The decoder omits them from canonical
+output, so decoding and reserializing does not preserve them.
 
 ## Selected snapshot and layer stack
 
@@ -97,9 +84,8 @@ stack. Every stack layer has its own grid, cell metrics, and cells.
 | Selected `layer` | `id`, `cells`                             | `id` is a nonempty string.                                                                                    |
 | Cell collection  | `encoding`, `rows`                        | `encoding` is exactly `object-rows-v1`; `rows` is an array.                                                   |
 
-In selected documents the `grid` is at the root. In stack documents it is
-required within each stack layer. The root `canvas` in a stack document is
-checked against the first layer's grid, not against every layer.
+In a selected document, `grid` is at the root. In a stack, each layer has a
+grid and the root `canvas` is checked against the first layer's grid.
 
 Each stack layer requires all of the following fields:
 
@@ -137,10 +123,9 @@ flowchart TD
     Grid -. "all coordinates are present" .-> Cell
 ```
 
-Coordinates are zero-based. The stored `x` and `y` fields repeat information
-already represented by array position. They are deliberate consistency checks:
-`x` must equal the cell's index in its row, and `y` must equal the row index.
-Consumers must reject disagreement rather than reorder or repair cells.
+Coordinates are zero-based. Each cell's `x` and `y` must match its position in
+`rows[y][x]`. Consumers must reject a mismatch instead of reordering or repairing
+cells.
 
 | Cell field                 | Required | Schema-level shape                                                                                                                                           |
 | -------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -153,10 +138,8 @@ An RGBA color object requires integer `r`, `g`, `b`, and `a` channels. Each
 channel is between `0` and `255`. The schema permits additional properties in
 these objects, as it does for the other ordinary objects in the format.
 
-The JSON Schema describes the arrays and cell objects. The decoder checks that
-the number of rows matches `grid.rows`, each row length matches `grid.cols`,
-coordinates match their positions, and canvas dimensions match the grid pixel
-products.
+The decoder checks row sizes, coordinates, and canvas dimensions against the
+grid. The schema alone does not check these relationships.
 
 ## Cell, color, and transform structure
 
@@ -185,12 +168,10 @@ flowchart TD
     Transform --> Rotation["rotation: finite degrees<br/>canonical range [0, 360)"]
 ```
 
-The decoder normalizes both accepted color forms into RGBA channel objects and
-normalizes cell rotation into `[0, 360)`. It does not normalize Unicode text:
-the glyph string is preserved as written, without Unicode normalization. A
-string may contain multiple Unicode scalar values, such as a combining sequence
-or a joined emoji. Unpaired surrogates are invalid. The schema's string length
-constraint is structural; the decoder also applies its scalar-count limit.
+The decoder converts colors to RGBA objects and normalizes cell rotation to
+`[0, 360)`. It preserves Unicode strings without normalization. A glyph can
+contain multiple scalar values, such as a combining sequence or joined emoji;
+unpaired surrogates are invalid. The decoder also applies a scalar-count limit.
 
 Cell alpha and layer opacity are separate. A cell is visually empty only when
 both foreground and background alpha are zero. A space glyph with a visible
@@ -220,43 +201,23 @@ behavior, fetch resources, or bypass validation.
 
 ## Validation and decoding boundaries
 
-Use the schema for structural validation and local constraints. Use the format
-specification to interpret fields and define relationships. Use the decoder to
-enforce cross-field checks, resource budgets, supported versions, migration,
-and canonical normalization.
+The schema describes structure and local constraints. The specification defines
+field meaning and relationships. The decoder checks documents, applies limits,
+and migrates supported older formats to canonical v3 output.
 
 ```mermaid
 flowchart LR
-    Input["JSON value"] --> Schema["JSON Schema<br/>types, required fields,<br/>local constraints"]
-    Schema --> Spec["Format specification<br/>meaning and cross-field rules"]
-    Spec --> Decoder["Runtime decoder<br/>validation, limits,<br/>migration, normalization"]
-    Decoder --> Canonical["Canonical v3 document"]
-    Decoder --> Error["Failure result or warnings"]
-
-    Legacy["textmode.layer@1.0.0<br/>or textmode.layer@1.1.0"] --> Decoder
-    Decoder -. "legacy migration warning" .-> Canonical
+    Input["v2 or supported legacy JSON"] --> Decoder["Decoder<br/>validation, limits,<br/>migration, normalization"]
+    Decoder --> Canonical["Canonical v3 document<br/>with migration warning"]
+    Decoder --> Error["Failure result"]
+    Schema["JSON Schema<br/>structure and local constraints"] -. "v2 structure" .-> Input
+    Spec["Format specification<br/>meaning and relationships"] -. "v2 rules" .-> Decoder
 ```
 
-The schema cannot express every decoder rule. For example, it does not by itself
-ensure that array dimensions agree with `grid`, that redundant coordinates
-match array positions, or that total document size stays within a caller's
-budget. A schema-valid value can still fail decoding. See the
-[consumer guide](consumer-guide.md#use-json-schema) for validator setup and
-error handling.
-
-The decoder's default limits are:
-
-| Limit                                                             |                  Default |
-| ----------------------------------------------------------------- | -----------------------: |
-| Cumulative cells (`maxCells`)                                     |               16,777,216 |
-| Stack layers (`maxLayers`)                                        |                    4,096 |
-| Layer ID length (`maxLayerIdLength`)                              |  1,024 UTF-16 code units |
-| Glyph length (`maxCharacterLength`)                               | 64 Unicode scalar values |
-| Metadata and blend-mode string length (`maxMetadataStringLength`) |  4,096 UTF-16 code units |
-
-Callers may lower or raise decoder limits within supported configuration rules.
-This does not change the published JSON Schema constraints. Limits apply after
-JSON parsing and do not cap input bytes or parser memory.
+A schema-valid document can still fail decoding. For example, the schema does
+not check row sizes against the grid or enforce a caller's total cell budget.
+See the [consumer guide](consumer-guide.md#use-json-schema) for validator setup
+and the [v2 specification](specification-2.0.md#safety-limits) for decoder limits.
 
 ## Scope and compatibility
 

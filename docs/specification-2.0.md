@@ -6,18 +6,14 @@
 
 ## Status
 
-This document defines `textmode.document` version `2.0.0`. The canonical
-specification, schema, and decoder are maintained by `textmode-document` and
-published as `@textmode/document`. The raw schema is available from
-`@textmode/document/schema/2.0` and [the repository](../schemas/2.0/schema.json).
-The schema's `$id` is a stable identifier, not a hosted download URL.
+This specification defines `textmode.document@2.0.0`. Its [JSON Schema](../schemas/2.0/schema.json)
+is also available as `@textmode/document/schema/2.0`. The schema's `$id` is an
+identifier and does not guarantee a hosted download. Package and document versions
+are independent.
 
-The ESM-only package root exposes the decoder and types. Package version `1.0.0`
-is independent of file version `2.0.0`. Test fixtures are private repository data;
-complete public documents appear in the [consumer guide](consumer-guide.md).
-
-The format represents editable cell data. It does not represent final rendered
-pixels, post-processing, an editor project, or authored animation.
+Version 2 stores editable cell data. It does not store final rendered pixels,
+post-processing, an editor project, or authored animation. For complete examples
+of the current format, see the [consumer guide](consumer-guide.md).
 
 ## Encoding
 
@@ -29,9 +25,8 @@ profile in RFC 7493:
 - non-finite numbers are not emitted;
 - timestamps use an uppercase, timezone-qualified RFC 3339 representation.
 
-These are producer requirements and recommendations. The JavaScript parser uses
-native `JSON.parse`, which does not detect duplicate object keys and retains the
-last value. No duplicate-key detection is claimed by this codec.
+The JavaScript parser uses `JSON.parse`, which keeps the last value for a
+repeated key. It does not report duplicate keys.
 
 The media type is `application/json`. `.textmode.json` is a suggested filename
 suffix; existing exporter downloads use `.json` by default. Extensions and
@@ -61,16 +56,15 @@ container format.
 
 ## Version compatibility
 
-The version is SemVer-shaped for release communication. Version 2 does not
-define reader negotiation or a formal extension mechanism. Consumers therefore
-accept only explicitly tested versions and migrations; they must not assume an
-unknown `2.x` version is compatible.
+The version uses a SemVer-shaped identifier. Version 2 does not define reader
+negotiation or a formal extension mechanism. Consumers must accept only explicitly
+tested versions and migrations; an unknown `2.x` version is not automatically
+compatible.
 
-For a supported version, consumers ignore unknown ordinary object members.
-The canonical decoder omits these members from its new output object; it does
-not preserve them for reserialization.
-They reject unknown values of tagged members such as `format`, `target`, and
-`encoding` because those values change interpretation.
+For a supported version, consumers ignore unknown ordinary fields. The decoder
+omits them from canonical output, so reserialization does not preserve them.
+Consumers reject unknown `format`, `target`, and `encoding` values because those
+values change how to read the document.
 
 Version 2 does not define `extensionsUsed`, `extensionsRequired`, extension
 namespacing, or an extension registry. A later revision must define those
@@ -132,8 +126,7 @@ canvas.height = grid.rows × grid.cellHeight
 For an `all` document, the root extent is derived from the first layer's grid.
 Consumers must not infer composite placement or clipping from this field.
 
-A future major format may replace this legacy name with `gridPixelSize`; v2
-semantics must not be changed in place.
+The meaning of this field must not change within version 2.
 
 ## Cell encoding
 
@@ -235,10 +228,9 @@ throws `TypeError`. Invalid document data instead returns a typed failure.
 | `maxCharacterLength`      | 64         | Unicode scalar values per glyph string.                    |
 | `maxMetadataStringLength` | 4,096      | UTF-16 code units per metadata string and blend-mode name. |
 
-These budgets apply after JSON parsing and do not bound file bytes or parser
-memory. The schema's fixed glyph `maxLength` remains 64 even when an app raises
-the decoder's glyph budget. Product-specific policy belongs to the product. For example,
-`create.textmode.art` may accept fewer cells than another document consumer.
+These budgets apply after JSON parsing and do not limit file bytes or parser
+memory. The schema's glyph `maxLength` remains 64 even when an app raises the
+decoder limit. Applications can also enforce their own feature and size limits.
 
 Consumers should:
 
@@ -258,14 +250,14 @@ The compatibility decoder recognizes:
 - `textmode.layer@1.0.0` as a selected cell snapshot;
 - `textmode.layer@1.1.0` as a layer stack.
 
-Both migrate to the canonical v2 union and return a migration warning. Callers
-may disable legacy decoding.
+The current decoder migrates both to canonical v3 output and returns
+`LEGACY_DOCUMENT_MIGRATED`. Set `acceptLegacy: false` to reject these legacy files;
+this does not disable v2 document support.
 
 ## JSON Schema and runtime decoder
 
-The specification defines meaning and cross-field rules. The JSON Schema describes the portable structure and is suitable for
-documentation and general tooling. The runtime decoder remains authoritative
-for:
+The specification defines meaning and cross-field rules. The JSON Schema describes
+structure for general tooling. The decoder also checks or applies:
 
 - cross-field row and grid invariants;
 - grid pixel extent equality;
