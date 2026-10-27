@@ -11,7 +11,7 @@
 
 `@textmode/document` defines a portable, versioned JSON format for textmode artwork. It provides a language-neutral specification, JSON Schema, TypeScript types, and a dependency-free decoder for browsers and Node.js.
 
-The package defines a unified `textmode.document@3.0.0` structure and reads v2 plus `textmode.layer@1.0.0` and `textmode.layer@1.1.0`. The package version and document format version are independent. Updating this library does not change existing files.
+The package defines a unified `textmode.document@3.1.0` structure and reads v3.0, v2, plus `textmode.layer@1.0.0` and `textmode.layer@1.1.0`. The package version and document format version are independent. Updating this library does not change existing files.
 
 ## Install
 
@@ -44,10 +44,10 @@ Successful decoding returns a new canonical document. Colors use RGBA objects, c
 ## Documentation
 
 - [Consumer guide](docs/consumer-guide.md): parsing, schema imports, error handling, resource budgets, and complete examples.
-- [Format 3.0 specification](docs/specification-3.0.md): the language-neutral contract for producers and consumers.
-- [JSON Schema visual guide](docs/schema-3.0.md): diagrams of document shapes, layers, cells, and validation responsibilities.
+- [Format 3.1 specification](docs/specification-3.1.md): the language-neutral contract for producers and consumers.
+- [JSON Schema visual guide](docs/schema-3.1.md): diagrams of document shapes, layers, cells, and validation responsibilities.
 - [Format 2.0 reference](docs/specification-2.0.md) and [visual guide](docs/schema-2.0.md): the older wire format.
-- [JSON Schema](schemas/3.0/schema.json): also available from `@textmode/document/schema/3.0`.
+- [JSON Schema](schemas/3.1/schema.json): also available from `@textmode/document/schema/3.1`.
 
 The schema identifier is an identifier. It does not promise that the schema is hosted at that URL. Test fixtures are private test data. They are not package exports and are excluded from npm packages.
 

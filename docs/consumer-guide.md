@@ -51,16 +51,16 @@ Invalid input returns `{ ok: false, error }`. The error includes a `code`,
 
 Successful results contain a canonical v3 `document` and a `warnings` array.
 Migrated `textmode.layer` v1 files return `LEGACY_DOCUMENT_MIGRATED`. Set
-`acceptLegacy: false` to reject them; the default is `true`. Supported v2 files
+`acceptLegacy: false` to reject them; the default is `true`. Supported v2 and v3.0 files
 remain readable and return `DOCUMENT_VERSION_MIGRATED`.
 
 After decoding, your app must check its own requirements, such as available fonts
 and supported blend modes. The decoder normalizes known values and omits unknown
 properties, so decoding and serializing does not preserve extensions. The format
-does not store font identity or post-processing.
+can identify the source font; it does not embed font files or store post-processing.
 
 Set limits to positive safe integers. Invalid limit configuration throws
-`TypeError`. See the [default limits](specification-3.0.md#validation-budgets-and-compatibility).
+`TypeError`. See the [default limits](specification-3.1.md#validation-budgets-and-compatibility).
 
 Check file size before reading: decoder limits apply after JSON parsing and do not
 limit input bytes or parser memory. Choose budgets for your app and check for
@@ -72,7 +72,7 @@ you can decode large files in a worker.
 Node 24 can import the schema with an import attribute:
 
 ```js
-import schema from '@textmode/document/schema/3.0' with { type: 'json' };
+import schema from '@textmode/document/schema/3.1' with { type: 'json' };
 ```
 
 Bundlers may use different JSON import syntax. Tools that read files can resolve
@@ -83,7 +83,7 @@ For example, with Ajv installed in the consumer:
 ```js
 import Ajv2020 from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
-import schema from '@textmode/document/schema/3.0' with { type: 'json' };
+import schema from '@textmode/document/schema/3.1' with { type: 'json' };
 
 const ajv = new Ajv2020({ validateFormats: true });
 addFormats(ajv, { mode: 'full' });
@@ -99,12 +99,12 @@ schema; for example, the schema's glyph `maxLength` remains 64.
 ## Complete single-layer document
 
 A single-layer document uses the same structure as a layer stack. The receiving
-application chooses the font.
+application resolves the optional font reference or asks for a substitute.
 
 ```json
 {
 	"format": "textmode.document",
-	"formatVersion": "3.0.0",
+	"formatVersion": "3.1.0",
 	"layers": [
 		{
 			"visible": true,
@@ -153,7 +153,7 @@ grid and presentation values. The document has no root canvas or viewport.
 ```json
 {
 	"format": "textmode.document",
-	"formatVersion": "3.0.0",
+	"formatVersion": "3.1.0",
 	"layers": [
 		{
 			"id": "base",
@@ -228,3 +228,19 @@ grid and presentation values. The document has no root canvas or viewport.
 	]
 }
 ```
+
+## Identify a font
+
+Use the separate font entry point with decoded SFNT bytes. WOFF decoding belongs
+to the font loader. Identification is synchronous and does not require a renderer.
+
+```ts
+import { identifySfntFont } from '@textmode/document/font';
+
+const result = identifySfntFont(decodedSfntBytes);
+if (result.ok) layer.font = result.font;
+```
+
+Match the complete `font.id`. Use `font.name` only for display. Missing references
+remain valid. Do not infer an ID from a filename, app label, or glyph coverage.
+See the [font identity contract](specification-3.1.md#font-identity).

@@ -4,7 +4,7 @@ import { decodeTextmodeDocument, parseTextmodeDocumentJSON } from '../src/index.
 import { compileSchema } from './support/schema.js';
 
 const guide = readFileSync(new URL('../docs/consumer-guide.md', import.meta.url), 'utf8');
-const validate = compileSchema('3.0');
+const validate = compileSchema('3.1');
 const examples = [...guide.matchAll(/```json\n([\s\S]*?)\n```/g)].map((match) => match[1]);
 
 describe('complete consumer-guide documents', () => {
