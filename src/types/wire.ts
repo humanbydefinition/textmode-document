@@ -61,7 +61,14 @@ export interface TextmodeDocumentMetadata {
 	};
 }
 
+/** Portable identity of a normalized font revision. Matching uses only id. */
+export interface TextmodeDocumentFontReference {
+	id: `sfnt-v1-sha256:${string}`;
+	name?: string;
+}
+
 export interface TextmodeDocumentLayer {
+	font?: TextmodeDocumentFontReference;
 	id: string;
 	visible: boolean;
 	opacity: number;

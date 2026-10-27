@@ -40,6 +40,7 @@ export type {
 	TextmodeDocumentError,
 	TextmodeDocumentErrorCode,
 	TextmodeDocumentFormat,
+	TextmodeDocumentFontReference,
 	TextmodeDocumentGrid,
 	TextmodeDocumentJSON,
 	TextmodeDocumentLayer,

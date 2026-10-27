@@ -45,8 +45,13 @@ export function decodeTextmodeDocument(
 				ok: true,
 				document: decodeCurrentDocument(root, context),
 				warnings:
-					root.formatVersion === '2.0.0'
-						? [{ code: 'DOCUMENT_VERSION_MIGRATED', message: 'Migrated textmode.document 2.0.0 to 3.0.0.' }]
+					root.formatVersion !== TEXTMODE_DOCUMENT_FORMAT_VERSION
+						? [
+								{
+									code: 'DOCUMENT_VERSION_MIGRATED',
+									message: `Migrated textmode.document ${String(root.formatVersion)} to 3.1.0.`,
+								},
+							]
 						: [],
 			};
 		}
@@ -58,7 +63,7 @@ export function decodeTextmodeDocument(
 				warnings: [
 					{
 						code: 'LEGACY_DOCUMENT_MIGRATED',
-						message: 'Migrated a legacy textmode.layer document to textmode.document 3.0.0.',
+						message: 'Migrated a legacy textmode.layer document to textmode.document 3.1.0.',
 					},
 				],
 			};
@@ -94,7 +99,7 @@ export function parseTextmodeDocumentJSON(
 
 function decodeCurrentDocument(root: UnknownRecord, context: DecodeContext): CanonicalTextmodeDocument {
 	const version = requireString(root.formatVersion, '$.formatVersion');
-	if (version === TEXTMODE_DOCUMENT_FORMAT_VERSION) return decodeV3Document(root, context);
+	if (version === TEXTMODE_DOCUMENT_FORMAT_VERSION || version === '3.0.0') return decodeV3Document(root, context);
 	if (version !== '2.0.0') {
 		fail('UNSUPPORTED_VERSION', `Unsupported textmode.document version: ${version}.`, '$.formatVersion');
 	}

@@ -7,7 +7,7 @@ import addFormats from 'ajv-formats';
 const ajv = new Ajv2020({ validateFormats: true });
 addFormats.default(ajv, { mode: 'full' });
 
-export function compileSchema(version: '2.0' | '3.0'): ValidateFunction {
+export function compileSchema(version: '2.0' | '3.0' | '3.1'): ValidateFunction {
 	const schema = JSON.parse(
 		readFileSync(new URL(`../../schemas/${version}/schema.json`, import.meta.url), 'utf8')
 	) as object;

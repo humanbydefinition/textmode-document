@@ -30,6 +30,7 @@ import type {
 	CanonicalTextmodeCellCollection,
 	CanonicalTextmodeDocumentLayer,
 	TextmodeDocumentGrid,
+	TextmodeDocumentFontReference,
 } from './types/index.js';
 
 export function decodeSelectedDocument(root: UnknownRecord, context: DecodeContext): CanonicalTextmodeDocument {
@@ -91,7 +92,8 @@ function decodeLayer(
 	value: unknown,
 	path: string,
 	context: DecodeContext,
-	validatePixelExtent: boolean
+	validatePixelExtent: boolean,
+	includeFont = false
 ): CanonicalTextmodeDocumentLayer {
 	const layer = requireRecord(value, path);
 	const grid = decodeGrid(layer.grid, `${path}.grid`);
@@ -102,6 +104,7 @@ function decodeLayer(
 
 	return {
 		id: decodeLayerId(layer.id, `${path}.id`, context.limits),
+		...(includeFont && layer.font !== undefined ? { font: decodeFont(layer.font, `${path}.font`, context) } : {}),
 		visible: requireBoolean(layer.visible, `${path}.visible`),
 		opacity: requireNumberInRange(layer.opacity, `${path}.opacity`, 0, 1),
 		blendMode: requireBoundedString(layer.blendMode, `${path}.blendMode`, context.limits.maxMetadataStringLength),
@@ -203,6 +206,21 @@ export function decodeV3Document(root: UnknownRecord, context: DecodeContext): C
 		...(root.metadata === undefined
 			? {}
 			: { metadata: decodeMetadata(root.metadata, '$.metadata', context.limits) }),
-		layers: values.map((value, index) => decodeLayer(value, `$.layers[${index}]`, context, true)),
+		layers: values.map((value, index) =>
+			decodeLayer(value, `$.layers[${index}]`, context, true, root.formatVersion === '3.1.0')
+		),
+	};
+}
+
+function decodeFont(value: unknown, path: string, context: DecodeContext): TextmodeDocumentFontReference {
+	const font = requireRecord(value, path);
+	const id = requireString(font.id, `${path}.id`);
+	if (!/^sfnt-v1-sha256:[0-9a-f]{64}$/.test(id))
+		fail('INVALID_DOCUMENT', 'Expected a complete sfnt-v1-sha256 font identity.', `${path}.id`);
+	return {
+		id: id as TextmodeDocumentFontReference['id'],
+		...(font.name === undefined
+			? {}
+			: { name: requireBoundedString(font.name, `${path}.name`, context.limits.maxMetadataStringLength) }),
 	};
 }

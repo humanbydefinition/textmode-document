@@ -8,7 +8,7 @@ export const TEXTMODE_DOCUMENT_FORMAT = 'textmode.document' as const;
  * Current textmode document schema revision.
  *
  */
-export const TEXTMODE_DOCUMENT_FORMAT_VERSION = '3.0.0' as const;
+export const TEXTMODE_DOCUMENT_FORMAT_VERSION = '3.1.0' as const;
 
 /** Legacy format discriminator accepted by the compatibility decoder. */
 export const LEGACY_TEXTMODE_LAYER_FORMAT = 'textmode.layer' as const;
