@@ -18,18 +18,23 @@ describe('resource limits and canonical output', () => {
 		expect(result.ok).toBe(true);
 		if (!result.ok) return;
 		expect(result.document).not.toHaveProperty('futureHint');
-		expect(result.document.layers[0].cells.rows[0][0]).not.toHaveProperty('futureHint');
+		expect(result.document.frames[0].layers[0].cells.rows[0][0]).not.toHaveProperty('futureHint');
 		expect(input).toHaveProperty('futureHint', true);
 	});
 
-	it.each(['maxCells', 'maxLayers', 'maxLayerIdLength', 'maxCharacterLength', 'maxMetadataStringLength'])(
-		'rejects invalid %s configuration',
-		(name) => {
-			for (const value of [0, -1, 1.5, Number.POSITIVE_INFINITY, Number.MAX_SAFE_INTEGER + 1]) {
-				expect(() => decodeTextmodeDocument(selected(), { limits: { [name]: value } })).toThrow(TypeError);
-			}
+	it.each([
+		'maxCells',
+		'maxFrames',
+		'maxLayers',
+		'maxTotalLayers',
+		'maxLayerIdLength',
+		'maxCharacterLength',
+		'maxMetadataStringLength',
+	])('rejects invalid %s configuration', (name) => {
+		for (const value of [0, -1, 1.5, Number.POSITIVE_INFINITY, Number.MAX_SAFE_INTEGER + 1]) {
+			expect(() => decodeTextmodeDocument(selected(), { limits: { [name]: value } })).toThrow(TypeError);
 		}
-	);
+	});
 
 	it('applies the layer budget before decoding stack contents', () => {
 		const input = JSON.parse(
@@ -81,7 +86,7 @@ describe('resource limits and canonical output', () => {
 		const result = decodeTextmodeDocument(input);
 		expect(result.ok).toBe(true);
 		if (!result.ok) return;
-		expect(result.document.layers[0]).toMatchObject({ blendMode: 'custom-app-mode', rotationZ: -450 });
+		expect(result.document.frames[0].layers[0]).toMatchObject({ blendMode: 'custom-app-mode', rotationZ: -450 });
 	});
 
 	it('does not claim duplicate-key detection in native JSON parsing', () => {

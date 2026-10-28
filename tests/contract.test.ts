@@ -56,7 +56,9 @@ describe('textmode document contract', () => {
 		expect(result.ok).toBe(true);
 		if (!result.ok) return;
 
-		expect(result.document.layers.length).toBe(target === 'selected' || fixturePath.startsWith('legacy/') ? 1 : 2);
+		expect(result.document.frames[0].layers.length).toBe(
+			target === 'selected' || fixturePath.startsWith('legacy/') ? 1 : 2
+		);
 		expect(result.warnings[0].code).toBe(isLegacy ? 'LEGACY_DOCUMENT_MIGRATED' : 'DOCUMENT_VERSION_MIGRATED');
 	});
 
@@ -119,8 +121,8 @@ describe('textmode document contract', () => {
 		expect(result.ok).toBe(true);
 		if (!result.ok) return;
 
-		expect(result.document.layers[0].grid).toMatchObject({ cols: 3, rows: 2 });
-		const cells = result.document.layers[0].cells.rows.flat();
+		expect(result.document.frames[0].layers[0].grid).toMatchObject({ cols: 3, rows: 2 });
+		const cells = result.document.frames[0].layers[0].cells.rows.flat();
 		expect(cells).toEqual(
 			expect.arrayContaining([
 				expect.objectContaining({

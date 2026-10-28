@@ -3,6 +3,7 @@ import type {
 	TextmodeDocumentRGBAColor,
 	TextmodeDocumentLayer,
 	TextmodeDocumentJSON,
+	TextmodeDocumentFrame,
 } from './wire.js';
 import type { TEXTMODE_OBJECT_ROWS_ENCODING } from '../constants.js';
 
@@ -17,6 +18,9 @@ export interface CanonicalTextmodeCellCollection {
 export interface CanonicalTextmodeDocumentLayer extends Omit<TextmodeDocumentLayer, 'cells'> {
 	cells: CanonicalTextmodeCellCollection;
 }
-export interface CanonicalTextmodeDocument extends Omit<TextmodeDocumentJSON, 'layers'> {
+export interface CanonicalTextmodeDocumentFrame extends Omit<TextmodeDocumentFrame, 'layers'> {
 	layers: CanonicalTextmodeDocumentLayer[];
+}
+export interface CanonicalTextmodeDocument extends Omit<TextmodeDocumentJSON, 'frames'> {
+	frames: CanonicalTextmodeDocumentFrame[];
 }

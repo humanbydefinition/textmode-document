@@ -80,10 +80,17 @@ export interface TextmodeDocumentLayer {
 	cells: TextmodeDocumentCellCollection;
 }
 
-/** One portable document with one or more ordered layers, bottom first. */
+/** Complete snapshot. Layers are bottom first; an empty stack is a blank frame. */
+export interface TextmodeDocumentFrame {
+	/** Positive finite milliseconds, including fractional milliseconds. */
+	durationMs: number;
+	layers: TextmodeDocumentLayer[];
+}
+
+/** One portable document with one or more frames in playback order. */
 export interface TextmodeDocumentJSON {
 	format: TextmodeDocumentFormat;
 	formatVersion: TextmodeDocumentVersion;
 	metadata?: TextmodeDocumentMetadata;
-	layers: TextmodeDocumentLayer[];
+	frames: TextmodeDocumentFrame[];
 }

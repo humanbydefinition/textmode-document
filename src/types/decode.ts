@@ -2,7 +2,11 @@ import type { CanonicalTextmodeDocument } from './canonical.js';
 
 export interface TextmodeDocumentLimits {
 	maxCells?: number;
+	maxFrames?: number;
+	/** Maximum layer count within any one frame. */
 	maxLayers?: number;
+	/** Cumulative layer instances across all frames. */
+	maxTotalLayers?: number;
 	maxLayerIdLength?: number;
 	maxCharacterLength?: number;
 	maxMetadataStringLength?: number;
@@ -30,8 +34,9 @@ export interface TextmodeDocumentError {
 }
 
 export interface TextmodeDocumentWarning {
-	code: 'LEGACY_DOCUMENT_MIGRATED' | 'DOCUMENT_VERSION_MIGRATED';
+	code: 'LEGACY_DOCUMENT_MIGRATED' | 'DOCUMENT_VERSION_MIGRATED' | 'LAYER_ID_REASSIGNED';
 	message: string;
+	path?: string;
 }
 
 export type JSONParseResult = { ok: true; value: unknown } | { ok: false; error: TextmodeDocumentError };

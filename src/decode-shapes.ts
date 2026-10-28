@@ -1,8 +1,4 @@
-import {
-	TEXTMODE_DOCUMENT_FORMAT,
-	TEXTMODE_DOCUMENT_FORMAT_VERSION,
-	TEXTMODE_OBJECT_ROWS_ENCODING,
-} from './constants.js';
+import { TEXTMODE_OBJECT_ROWS_ENCODING } from './constants.js';
 import {
 	assertCanvasMatchesGrid,
 	checkedProduct,
@@ -10,7 +6,6 @@ import {
 	decodeColor,
 	decodeGrid,
 	decodeLayerId,
-	decodeMetadata,
 	fail,
 	normalizeRotation,
 	requireArray,
@@ -25,7 +20,7 @@ import {
 } from './validation.js';
 import type { DecodeContext, UnknownRecord } from './validation.js';
 import type {
-	CanonicalTextmodeDocument,
+	CanonicalTextmodeDocumentFrame,
 	CanonicalTextmodeCell,
 	CanonicalTextmodeCellCollection,
 	CanonicalTextmodeDocumentLayer,
@@ -33,59 +28,49 @@ import type {
 	TextmodeDocumentFontReference,
 } from './types/index.js';
 
-export function decodeSelectedDocument(root: UnknownRecord, context: DecodeContext): CanonicalTextmodeDocument {
+/** Validate the historical selected-layer shape before migration. */
+export function decodeSelectedDocument(root: UnknownRecord, context: DecodeContext): CanonicalTextmodeDocumentLayer[] {
 	const canvas = decodeCanvas(root.canvas, '$.canvas');
 	const grid = decodeGrid(root.grid, '$.grid');
 	assertCanvasMatchesGrid(canvas, grid, '$.canvas');
 	const layer = requireRecord(root.layer, '$.layer');
-
-	return {
-		format: TEXTMODE_DOCUMENT_FORMAT,
-		formatVersion: TEXTMODE_DOCUMENT_FORMAT_VERSION,
-		...(root.metadata === undefined
-			? {}
-			: { metadata: decodeMetadata(root.metadata, '$.metadata', context.limits) }),
-		layers: [
-			{
-				visible: true,
-				opacity: 1,
-				blendMode: 'normal',
-				offsetX: 0,
-				offsetY: 0,
-				rotationZ: 0,
-				grid,
-				id: decodeLayerId(layer.id, '$.layer.id', context.limits),
-				cells: decodeCells(layer.cells, grid, '$.layer.cells', context),
-			},
-		],
-	};
+	checkLayerCount(1, '$.layer', context);
+	return [
+		{
+			visible: true,
+			opacity: 1,
+			blendMode: 'normal',
+			offsetX: 0,
+			offsetY: 0,
+			rotationZ: 0,
+			grid,
+			id: decodeLayerId(layer.id, '$.layer.id', context.limits),
+			cells: decodeCells(layer.cells, grid, '$.layer.cells', context),
+		},
+	];
 }
 
-export function decodeAllDocument(root: UnknownRecord, context: DecodeContext): CanonicalTextmodeDocument {
+/** Validate the historical layer-stack shape before migration. */
+export function decodeAllDocument(root: UnknownRecord, context: DecodeContext): CanonicalTextmodeDocumentLayer[] {
 	const canvas = decodeCanvas(root.canvas, '$.canvas');
-	const layersValue = requireArray(root.layers, '$.layers');
-	if (layersValue.length === 0) {
+	const values = requireArray(root.layers, '$.layers');
+	if (values.length === 0)
 		fail('INVALID_DOCUMENT', 'A layer-stack document must contain at least one layer.', '$.layers');
-	}
-	if (layersValue.length > context.limits.maxLayers) {
+	checkLayerCount(values.length, '$.layers', context);
+	const layers = values.map((value, index) => decodeLayer(value, `$.layers[${index}]`, context, false));
+	assertCanvasMatchesGrid(canvas, layers[0].grid, '$.canvas');
+	return layers;
+}
+
+function checkLayerCount(count: number, path: string, context: DecodeContext): void {
+	if (count > context.limits.maxLayers)
+		fail('LIMIT_EXCEEDED', `Layer count exceeds the configured limit ${context.limits.maxLayers}.`, path);
+	if (count > context.limits.maxTotalLayers)
 		fail(
 			'LIMIT_EXCEEDED',
-			`Layer count ${layersValue.length} exceeds the configured limit ${context.limits.maxLayers}.`,
-			'$.layers'
+			`Total layer count exceeds the configured limit ${context.limits.maxTotalLayers}.`,
+			path
 		);
-	}
-
-	const decodedLayers = layersValue.map((value, index) => decodeLayer(value, `$.layers[${index}]`, context, false));
-	assertCanvasMatchesGrid(canvas, decodedLayers[0].grid, '$.canvas');
-
-	return {
-		format: TEXTMODE_DOCUMENT_FORMAT,
-		formatVersion: TEXTMODE_DOCUMENT_FORMAT_VERSION,
-		...(root.metadata === undefined
-			? {}
-			: { metadata: decodeMetadata(root.metadata, '$.metadata', context.limits) }),
-		layers: decodedLayers,
-	};
 }
 
 function decodeLayer(
@@ -186,30 +171,81 @@ function decodeCell(
 	};
 }
 
-/** Decode the current unified shape; obsolete structural fields are reserved. */
-export function decodeV3Document(root: UnknownRecord, context: DecodeContext): CanonicalTextmodeDocument {
-	for (const key of ['target', 'layer', 'grid', 'canvas']) {
-		if (Object.prototype.hasOwnProperty.call(root, key))
-			fail('INVALID_DOCUMENT', `Obsolete v3 root field: ${key}.`, `$.${key}`);
-	}
+/** Validate v3 using its original root and font rules. */
+export function decodeV3Document(root: UnknownRecord, context: DecodeContext): CanonicalTextmodeDocumentLayer[] {
+	rejectRootFields(root, ['target', 'layer', 'grid', 'canvas']);
 	const values = requireArray(root.layers, '$.layers');
 	if (values.length === 0) fail('INVALID_DOCUMENT', 'A document must contain at least one layer.', '$.layers');
-	if (values.length > context.limits.maxLayers)
-		fail(
-			'LIMIT_EXCEEDED',
-			`Layer count ${values.length} exceeds the configured limit ${context.limits.maxLayers}.`,
-			'$.layers'
-		);
-	return {
-		format: TEXTMODE_DOCUMENT_FORMAT,
-		formatVersion: TEXTMODE_DOCUMENT_FORMAT_VERSION,
-		...(root.metadata === undefined
-			? {}
-			: { metadata: decodeMetadata(root.metadata, '$.metadata', context.limits) }),
-		layers: values.map((value, index) =>
-			decodeLayer(value, `$.layers[${index}]`, context, true, root.formatVersion === '3.1.0')
-		),
-	};
+	checkLayerCount(values.length, '$.layers', context);
+	return values.map((value, index) =>
+		decodeLayer(value, `$.layers[${index}]`, context, true, root.formatVersion === '3.1.0')
+	);
+}
+
+function rejectRootFields(root: UnknownRecord, keys: string[]): void {
+	for (const key of keys) {
+		if (Object.prototype.hasOwnProperty.call(root, key))
+			fail('INVALID_DOCUMENT', `Obsolete root field: ${key}.`, `$.${key}`);
+	}
+}
+
+/** Preflight all frame and layer counts before decoding any cell payload. */
+export function decodeV4Frames(root: UnknownRecord, context: DecodeContext): CanonicalTextmodeDocumentFrame[] {
+	rejectRootFields(root, ['layers', 'target', 'layer', 'grid', 'canvas']);
+	const values = requireArray(root.frames, '$.frames');
+	if (values.length === 0) fail('INVALID_DOCUMENT', 'A document must contain at least one frame.', '$.frames');
+	if (values.length > context.limits.maxFrames)
+		fail('LIMIT_EXCEEDED', `Frame count exceeds the configured limit ${context.limits.maxFrames}.`, '$.frames');
+
+	let totalLayers = 0;
+	let durationUnits = 0n;
+	const maxDurationUnits = BigInt(Number.MAX_SAFE_INTEGER) << 1074n;
+	const durationView = new DataView(new ArrayBuffer(8));
+	const frames = values.map((value, index) => {
+		const path = `$.frames[${index}]`;
+		const frame = requireRecord(value, path);
+		const durationMs = requireFiniteNumber(frame.durationMs, `${path}.durationMs`);
+		if (durationMs <= 0 || durationMs > Number.MAX_SAFE_INTEGER)
+			fail(
+				'INVALID_DOCUMENT',
+				'Frame duration must be positive and at most Number.MAX_SAFE_INTEGER milliseconds.',
+				`${path}.durationMs`
+			);
+		durationUnits += durationInUnits(durationMs, durationView);
+		if (durationUnits > maxDurationUnits)
+			fail('LIMIT_EXCEEDED', 'Cumulative frame duration exceeds the safe numeric range.', `${path}.durationMs`);
+		const layers = requireArray(frame.layers, `${path}.layers`);
+		checkLayerCount(layers.length, `${path}.layers`, context);
+		if (layers.length > context.limits.maxTotalLayers - totalLayers)
+			fail(
+				'LIMIT_EXCEEDED',
+				`Total layer count exceeds the configured limit ${context.limits.maxTotalLayers}.`,
+				`${path}.layers`
+			);
+		totalLayers += layers.length;
+		const ids = new Set<string>();
+		layers.forEach((value, layerIndex) => {
+			const idPath = `${path}.layers[${layerIndex}].id`;
+			const layer = requireRecord(value, `${path}.layers[${layerIndex}]`);
+			const id = decodeLayerId(layer.id, idPath, context.limits);
+			if (ids.has(id)) fail('INVALID_DOCUMENT', 'Layer IDs must be unique within a frame.', idPath);
+			ids.add(id);
+		});
+		return { durationMs, layers, path };
+	});
+	return frames.map(({ durationMs, layers, path }) => ({
+		durationMs,
+		layers: layers.map((value, index) => decodeLayer(value, `${path}.layers[${index}]`, context, true, true)),
+	}));
+}
+
+/** Sum parsed binary64 values exactly in units of the smallest positive number (2^-1074). */
+function durationInUnits(value: number, view: DataView): bigint {
+	view.setFloat64(0, value);
+	const high = view.getUint32(0);
+	const exponent = (high >>> 20) & 0x7ff;
+	const fraction = (BigInt(high & 0xfffff) << 32n) | BigInt(view.getUint32(4));
+	return exponent === 0 ? fraction : ((1n << 52n) | fraction) << BigInt(exponent - 1);
 }
 
 function decodeFont(value: unknown, path: string, context: DecodeContext): TextmodeDocumentFontReference {
