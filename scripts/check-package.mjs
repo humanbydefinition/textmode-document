@@ -17,9 +17,18 @@ try {
 	assert(packed.files.every(({ path: name }) => !/(?:^|\/)(?:tests?|fixtures)(?:\/|\.)/.test(name)));
 	assert(packed.files.every(({ path: name }) => !name.endsWith('.test.d.ts')));
 	writeFileSync(path.join(temporary, 'package.json'), '{"private":true,"type":"module"}\n');
+	// npm ci can cache dependency tarballs without caching the registry metadata
+	// needed to resolve them in a new consumer project.
 	execFileSync(
 		'npm',
-		['install', '--ignore-scripts', '--offline', '--no-audit', '--no-fund', path.join(temporary, packed.filename)],
+		[
+			'install',
+			'--ignore-scripts',
+			'--prefer-offline',
+			'--no-audit',
+			'--no-fund',
+			path.join(temporary, packed.filename),
+		],
 		{ cwd: temporary, stdio: 'pipe' }
 	);
 	writeFileSync(
