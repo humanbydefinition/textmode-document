@@ -1,6 +1,6 @@
 {
 	"name": "@textmode/document",
-	"version": "2.0.0-dev.0",
+	"version": "2.0.0",
 	"description": "Portable textmode document format, JSON Schema, font identities, and dependency-free decoder.",
 	"license": "CC0-1.0",
 	"author": "humanbydefinition <hello@textmode.art> (https://code.textmode.art)",
