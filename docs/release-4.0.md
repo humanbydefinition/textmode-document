@@ -1,8 +1,8 @@
 # Migrate to format 4.0
 
-Package `3.0.0-dev.0` prepares a breaking API change for document format `4.0.0`.
-The package version and document version are independent. This guide describes
-future consumer work; this release changes only `textmode-document`.
+Package `4.0.0` releases a breaking API change for document format `4.0.0`.
+This release aligns the package and format versions. This guide describes future
+consumer work; this release changes only `textmode-document`.
 
 ## Protocol and API changes
 
