@@ -1,5 +1,6 @@
 # Visual guide to document format 3.1
 
+This is a historical wire-format reference. The current decoder returns [v4 frames](specification-4.0.md) for every supported input.
 These diagrams show the structure of `textmode.document@3.1.0`. For the complete
 rules, see the [specification](specification-3.1.md) and [JSON Schema](../schemas/3.1/schema.json).
 The [consumer guide](consumer-guide.md) includes complete example documents.
@@ -105,7 +106,7 @@ flowchart TD
     V2["v2: selected or all<br/>original validation including canvas"] --> Migration["Convert structure<br/>neutral presentation for selected snapshots"]
     V1["Legacy textmode.layer v1<br/>when acceptLegacy is true"] --> Migration
     Migration --> Decoder
-    Decoder --> Success["Success: canonical v3 layers<br/>RGBA colors; normalized cell rotation"]
+    Decoder --> Success["Success: canonical v4 frames<br/>RGBA colors; normalized cell rotation"]
     Decoder --> Failure["Failure: code, message, optional path"]
     Success --> Warnings["Migration warnings for older input"]
 ```

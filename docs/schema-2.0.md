@@ -1,8 +1,10 @@
 # Visual guide to document format 2.0
 
-> Versioned v2 reference. Current v3 documentation is in the
+This is a historical wire-format reference. The current decoder returns [v4 frames](specification-4.0.md) for every supported input.
+
+> Versioned v2 reference. Historical v3 documentation is in the
 > [v3 specification](specification-3.0.md) and [visual guide](schema-3.0.md).
-> The current decoder validates these older shapes and migrates them to v3.
+> The current decoder validates these older shapes and migrates them to v4.
 
 These diagrams show the structure of `textmode.document@2.0.0`. For the complete
 rules, see the [v2 specification](specification-2.0.md) and [JSON Schema](../schemas/2.0/schema.json).
@@ -203,7 +205,7 @@ behavior, fetch resources, or bypass validation.
 
 The schema describes structure and local constraints. The specification defines
 field meaning and relationships. The decoder checks documents, applies limits,
-and migrates supported older formats to canonical v3 output.
+and migrates supported older formats to canonical v4 frames.
 
 ```mermaid
 flowchart LR
@@ -227,9 +229,9 @@ post-processing, or final rendered pixels. Importers apply their own font,
 feature-support, and placement policies.
 
 The current decoder migrates v2 documents and supported `textmode.layer` files
-to canonical v3 layers. It reports a migration warning and can be configured to
+to canonical v4 frames. It reports a migration warning and can be configured to
 reject legacy `textmode.layer` input. The v2 JSON Schema describes the v2 wire
-shapes; it is not a schema for the legacy formats or current v3 output.
+shapes; it is not a schema for the legacy formats or current v4 output.
 
 For the exact normative rules, including unknown properties, timestamp
 requirements, blend-mode behavior, and safety guidance, see the
