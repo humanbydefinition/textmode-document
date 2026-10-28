@@ -14,8 +14,8 @@ describe('unified v3 documents', () => {
 		const result = decodeTextmodeDocument(input);
 		expect(result.ok).toBe(true);
 		if (!result.ok) return;
-		expect(result.warnings).toEqual([]);
-		expect(result.document.formatVersion).toBe('3.0.0');
+		expect(result.warnings).toMatchObject([{ code: 'DOCUMENT_VERSION_MIGRATED' }]);
+		expect(result.document.formatVersion).toBe('3.1.0');
 		expect(result.document.layers).toHaveLength(input.layers.length);
 		expect(result.document).not.toHaveProperty('target');
 	});

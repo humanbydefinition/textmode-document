@@ -17,9 +17,18 @@ try {
 	assert(packed.files.every(({ path: name }) => !/(?:^|\/)(?:tests?|fixtures)(?:\/|\.)/.test(name)));
 	assert(packed.files.every(({ path: name }) => !name.endsWith('.test.d.ts')));
 	writeFileSync(path.join(temporary, 'package.json'), '{"private":true,"type":"module"}\n');
+	// npm ci can cache dependency tarballs without caching the registry metadata
+	// needed to resolve them in a new consumer project.
 	execFileSync(
 		'npm',
-		['install', '--ignore-scripts', '--offline', '--no-audit', '--no-fund', path.join(temporary, packed.filename)],
+		[
+			'install',
+			'--ignore-scripts',
+			'--prefer-offline',
+			'--no-audit',
+			'--no-fund',
+			path.join(temporary, packed.filename),
+		],
 		{ cwd: temporary, stdio: 'pipe' }
 	);
 	writeFileSync(
@@ -27,8 +36,12 @@ try {
 		`import assert from 'node:assert/strict';
 import * as protocol from '@textmode/document';
 import schema from '@textmode/document/schema/3.0' with { type: 'json' };
+import currentSchema from '@textmode/document/schema/3.1' with { type: 'json' };
+import { identifySfntFont } from '@textmode/document/font';
+assert.equal(currentSchema.properties.formatVersion.const, '3.1.0');
+assert.equal(identifySfntFont(new Uint8Array()).ok, false);
 assert.equal(typeof globalThis.document, 'undefined');
-assert.equal(protocol.TEXTMODE_DOCUMENT_FORMAT_VERSION, '3.0.0');
+assert.equal(protocol.TEXTMODE_DOCUMENT_FORMAT_VERSION, '3.1.0');
 assert.equal(protocol.parseTextmodeDocumentJSON('{').error.code, 'INVALID_JSON');
 assert.equal(schema.$id, 'https://textmode.art/schemas/textmode-document-3.0.schema.json');
 assert.equal(schema.type, 'object');
@@ -41,7 +54,7 @@ assert.throws(() => import.meta.resolve('@textmode/document/fixtures/v2/selected
 	);
 	execFileSync(process.execPath, ['check.mjs'], { cwd: temporary, stdio: 'pipe' });
 	const manifest = JSON.parse(readFileSync(path.join(root, 'package.json'), 'utf8'));
-	assert.equal(Object.keys(manifest.dependencies ?? {}).length, 0);
+	assert.deepEqual(Object.keys(manifest.dependencies ?? {}), ['@noble/hashes']);
 	assert.equal(Object.keys(manifest.peerDependencies ?? {}).length, 0);
 	const source = readFileSync(path.join(root, 'src/index.ts'), 'utf8');
 	const names = /export type \{([\s\S]*?)\} from/.exec(source)[1];
