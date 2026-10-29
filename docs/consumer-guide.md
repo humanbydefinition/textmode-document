@@ -120,7 +120,7 @@ next frame. IDs must be unique within a frame and can recur across frames.
 Check timing precision and layer-model support before import. Applications must
 report unsupported meaningful data rather than silently dropping frames,
 rounding durations, or changing presentation. See the
-[consumer requirements](release-4.0.md#consumer-requirements).
+[consumer compatibility requirements](specification-4.0.md#consumer-compatibility).
 
 ## Complete still document
 

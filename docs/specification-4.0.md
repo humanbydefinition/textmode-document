@@ -216,7 +216,15 @@ label in place of the complete ID. Keep resource-integrity hashes separate.
 
 ## Consumer compatibility
 
-See the [migration and release guide](release-4.0.md). Protocol validity does not
-imply that an editor supports every grid, timing value, transform, or layer order.
-The package exposes no encoder: canonical output can be serialized with
-`JSON.stringify()`, and producers can use hexadecimal or RGBA colors.
+Protocol validity does not imply that an application supports every frame,
+duration, grid, font, transform, blend mode, or layer order. Before import,
+consumers must check that the target can represent the document. Report
+unsupported meaningful data and require an explicit conversion; do not silently
+drop frames, inherit missing layers, or round or clamp valid values. Wholly blank
+documents require dimensions from the receiving application or user.
+
+The decoder is synchronous and applies its limits after JSON parsing. Consumers
+must apply byte limits before reading or parsing and handle worker and
+cancellation policies at the application level. The package exposes no encoder:
+canonical output can be serialized with `JSON.stringify()`, and producers can use
+hexadecimal or RGBA colors.

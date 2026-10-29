@@ -60,4 +60,4 @@ flowchart TD
 
 Older schema exports stay unchanged. Migration does not invent font references.
 Apps must apply their own font, precision, layout, and feature policies after
-decoding. See the [release guide](release-4.0.md).
+decoding. See the [consumer compatibility requirements](specification-4.0.md#consumer-compatibility).
