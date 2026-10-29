@@ -1,0 +1,10 @@
+{
+	"format": "textmode.document",
+	"formatVersion": "4.0.0",
+	"frames": [
+		{
+			"durationMs": 100,
+			"layers": []
+		}
+	]
+}

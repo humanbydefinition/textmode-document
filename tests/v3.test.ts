@@ -1,10 +1,10 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { decodeTextmodeDocument, type TextmodeDocumentJSON } from '../src/index.js';
+import { decodeTextmodeDocument, type TextmodeV3DocumentJSON } from '../src/index.js';
 import { compileSchema } from './support/schema.js';
 
 const validate = compileSchema('3.0');
-function fixture(name = 'single-layer'): TextmodeDocumentJSON {
+function fixture(name = 'single-layer'): TextmodeV3DocumentJSON {
 	return JSON.parse(readFileSync(new URL(`fixtures/v3/${name}.json`, import.meta.url), 'utf8'));
 }
 describe('unified v3 documents', () => {
@@ -15,8 +15,8 @@ describe('unified v3 documents', () => {
 		expect(result.ok).toBe(true);
 		if (!result.ok) return;
 		expect(result.warnings).toMatchObject([{ code: 'DOCUMENT_VERSION_MIGRATED' }]);
-		expect(result.document.formatVersion).toBe('3.1.0');
-		expect(result.document.layers).toHaveLength(input.layers.length);
+		expect(result.document.formatVersion).toBe('4.0.0');
+		expect(result.document.frames[0].layers).toHaveLength(input.layers.length);
 		expect(result.document).not.toHaveProperty('target');
 	});
 	it.each(['target', 'layer', 'grid', 'canvas'])('rejects obsolete root field %s', (key) => {
@@ -62,7 +62,7 @@ describe('unified v3 documents', () => {
 		expect(result.ok).toBe(true);
 		if (result.ok) {
 			expect(result.document).not.toHaveProperty('future');
-			expect(result.document.layers[0]).not.toHaveProperty('future');
+			expect(result.document.frames[0].layers[0]).not.toHaveProperty('future');
 		}
 		expect(input).toHaveProperty('future');
 	});
@@ -82,7 +82,14 @@ describe('unified v3 documents', () => {
 			ok: true,
 			warnings: [{ code: 'DOCUMENT_VERSION_MIGRATED' }],
 			document: {
-				layers: [{ visible: true, opacity: 1, blendMode: 'normal', offsetX: 0, offsetY: 0, rotationZ: 0 }],
+				frames: [
+					{
+						durationMs: 100,
+						layers: [
+							{ visible: true, opacity: 1, blendMode: 'normal', offsetX: 0, offsetY: 0, rotationZ: 0 },
+						],
+					},
+				],
 			},
 		});
 	});

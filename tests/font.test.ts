@@ -81,11 +81,14 @@ describe('3.1 font references', () => {
 		expect(validate(doc)).toBe(true);
 		expect(decodeTextmodeDocument(doc)).toMatchObject({
 			ok: true,
-			warnings: [],
-			document: { formatVersion: '3.1.0', layers: [{ font: { id, name: 'UrsaFont' } }] },
+			warnings: [{ code: 'DOCUMENT_VERSION_MIGRATED' }],
+			document: {
+				formatVersion: '4.0.0',
+				frames: [{ durationMs: 100, layers: [{ font: { id, name: 'UrsaFont' } }] }],
+			},
 		});
 		const result = decodeTextmodeDocument(doc);
-		if (result.ok) expect(result.document.layers[0].font).toEqual({ id, name: 'UrsaFont' });
+		if (result.ok) expect(result.document.frames[0].layers[0].font).toEqual({ id, name: 'UrsaFont' });
 	});
 	it.each([
 		null,
@@ -106,7 +109,7 @@ describe('3.1 font references', () => {
 		expect(validate(doc)).toBe(true);
 		const result = decodeTextmodeDocument({ ...doc, formatVersion: '3.0.0' });
 		if (!result.ok) throw Error(result.error.message);
-		expect(result.document.layers[0]).not.toHaveProperty('font');
-		expect(result.document.formatVersion).toBe('3.1.0');
+		expect(result.document.frames[0].layers[0]).not.toHaveProperty('font');
+		expect(result.document.formatVersion).toBe('4.0.0');
 	});
 });

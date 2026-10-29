@@ -1,8 +1,10 @@
 # Textmode document format 2.0
 
-> Versioned v2 reference. Current v3 documentation is in the
+This is a historical wire-format reference. The current decoder returns [v4 frames](specification-4.0.md) for every supported input.
+
+> Versioned v2 reference. Historical v3 documentation is in the
 > [v3 specification](specification-3.0.md) and [visual guide](schema-3.0.md).
-> The current decoder validates these older shapes and migrates them to v3.
+> The current decoder validates these older shapes and migrates them to v4.
 
 ## Status
 
@@ -250,7 +252,7 @@ The compatibility decoder recognizes:
 - `textmode.layer@1.0.0` as a selected cell snapshot;
 - `textmode.layer@1.1.0` as a layer stack.
 
-The current decoder migrates both to canonical v3 output and returns
+The current decoder migrates both to canonical v4 frames and returns
 `LEGACY_DOCUMENT_MIGRATED`. Set `acceptLegacy: false` to reject these legacy files;
 this does not disable v2 document support.
 

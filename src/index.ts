@@ -2,7 +2,7 @@
  * Dependency-free textmode document protocol codec.
  *
  * This entry point contains no DOM, renderer, textmode.js, or media encoder
- * dependencies. It decodes v3 and migrates supported v1/v2 documents; product-specific
+ * dependencies. It decodes v4 frames and migrates supported v1/v2/v3 documents; product-specific
  * import policy belongs to callers.
  *
  * @packageDocumentation
@@ -24,6 +24,11 @@ export type {
 	CanonicalTextmodeCellCollection,
 	CanonicalTextmodeDocument,
 	CanonicalTextmodeDocumentLayer,
+	CanonicalTextmodeDocumentFrame,
+	TextmodeDocumentFrame,
+	TextmodeV3DocumentJSON,
+	TextmodeV31DocumentJSON,
+	TextmodeV3DocumentLayer,
 	JSONParseResult,
 	TextmodeV2SelectedDocumentLayer,
 	TextmodeV2SelectedDocumentJSON,

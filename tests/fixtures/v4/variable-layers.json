@@ -1,0 +1,231 @@
+{
+	"format": "textmode.document",
+	"formatVersion": "4.0.0",
+	"frames": [
+		{
+			"durationMs": 16.666666666666668,
+			"layers": [
+				{
+					"id": "base",
+					"visible": true,
+					"opacity": 1,
+					"blendMode": "normal",
+					"offsetX": 0,
+					"offsetY": 0,
+					"rotationZ": 0,
+					"grid": {
+						"cols": 1,
+						"rows": 1,
+						"cellWidth": 8,
+						"cellHeight": 16
+					},
+					"cells": {
+						"encoding": "object-rows-v1",
+						"rows": [
+							[
+								{
+									"x": 0,
+									"y": 0,
+									"character": "A",
+									"foreground": "#ff000080",
+									"background": "#00000000",
+									"transform": {
+										"invert": false,
+										"flipX": false,
+										"flipY": false,
+										"rotation": -90
+									}
+								}
+							]
+						]
+					}
+				},
+				{
+					"id": "accent",
+					"visible": true,
+					"opacity": 0.5,
+					"blendMode": "screen",
+					"offsetX": 4,
+					"offsetY": 0,
+					"rotationZ": -450,
+					"grid": {
+						"cols": 1,
+						"rows": 1,
+						"cellWidth": 4,
+						"cellHeight": 16
+					},
+					"cells": {
+						"encoding": "object-rows-v1",
+						"rows": [
+							[
+								{
+									"x": 0,
+									"y": 0,
+									"character": "é",
+									"foreground": {
+										"r": 0,
+										"g": 255,
+										"b": 0,
+										"a": 255
+									},
+									"background": "#00000000",
+									"transform": {
+										"invert": false,
+										"flipX": false,
+										"flipY": false,
+										"rotation": -90
+									}
+								}
+							]
+						]
+					},
+					"font": {
+						"id": "sfnt-v1-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+						"name": "Fixture a"
+					}
+				}
+			]
+		},
+		{
+			"durationMs": 42.5,
+			"layers": [
+				{
+					"id": "accent",
+					"visible": true,
+					"opacity": 0.5,
+					"blendMode": "screen",
+					"offsetX": 4,
+					"offsetY": 0,
+					"rotationZ": -450,
+					"grid": {
+						"cols": 1,
+						"rows": 1,
+						"cellWidth": 4,
+						"cellHeight": 16
+					},
+					"cells": {
+						"encoding": "object-rows-v1",
+						"rows": [
+							[
+								{
+									"x": 0,
+									"y": 0,
+									"character": "é",
+									"foreground": {
+										"r": 0,
+										"g": 255,
+										"b": 0,
+										"a": 255
+									},
+									"background": "#00000000",
+									"transform": {
+										"invert": false,
+										"flipX": false,
+										"flipY": false,
+										"rotation": -90
+									}
+								}
+							]
+						]
+					},
+					"font": {
+						"id": "sfnt-v1-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+						"name": "Fixture a"
+					}
+				}
+			]
+		},
+		{
+			"durationMs": 5,
+			"layers": []
+		},
+		{
+			"durationMs": 120,
+			"layers": [
+				{
+					"id": "accent",
+					"visible": true,
+					"opacity": 0.5,
+					"blendMode": "screen",
+					"offsetX": 4,
+					"offsetY": 0,
+					"rotationZ": -450,
+					"grid": {
+						"cols": 1,
+						"rows": 1,
+						"cellWidth": 4,
+						"cellHeight": 16
+					},
+					"cells": {
+						"encoding": "object-rows-v1",
+						"rows": [
+							[
+								{
+									"x": 0,
+									"y": 0,
+									"character": "é",
+									"foreground": {
+										"r": 0,
+										"g": 255,
+										"b": 0,
+										"a": 255
+									},
+									"background": "#00000000",
+									"transform": {
+										"invert": false,
+										"flipX": false,
+										"flipY": false,
+										"rotation": -90
+									}
+								}
+							]
+						]
+					},
+					"font": {
+						"id": "sfnt-v1-sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+						"name": "Fixture a"
+					}
+				},
+				{
+					"id": "base",
+					"visible": true,
+					"opacity": 1,
+					"blendMode": "normal",
+					"offsetX": 0,
+					"offsetY": 0,
+					"rotationZ": 0,
+					"grid": {
+						"cols": 1,
+						"rows": 1,
+						"cellWidth": 8,
+						"cellHeight": 8
+					},
+					"cells": {
+						"encoding": "object-rows-v1",
+						"rows": [
+							[
+								{
+									"x": 0,
+									"y": 0,
+									"character": "👩‍💻",
+									"foreground": "#ff000080",
+									"background": "#00000000",
+									"transform": {
+										"invert": false,
+										"flipX": false,
+										"flipY": false,
+										"rotation": -90
+									}
+								}
+							]
+						]
+					},
+					"font": {
+						"id": "sfnt-v1-sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+						"name": "Fixture b"
+					}
+				}
+			]
+		}
+	]
+}

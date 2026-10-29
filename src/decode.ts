@@ -5,12 +5,22 @@ import {
 	TEXTMODE_DOCUMENT_FORMAT,
 	TEXTMODE_DOCUMENT_FORMAT_VERSION,
 } from './constants.js';
-import { decodeAllDocument, decodeSelectedDocument, decodeV3Document } from './decode-shapes.js';
+import { decodeAllDocument, decodeSelectedDocument, decodeV3Document, decodeV4Frames } from './decode-shapes.js';
 import { parseJSON } from './parse.js';
-import { DocumentDecodeFailure, fail, failure, requireRecord, requireString, resolveLimits } from './validation.js';
+import {
+	DocumentDecodeFailure,
+	decodeLayerId,
+	decodeMetadata,
+	fail,
+	failure,
+	requireRecord,
+	requireString,
+	resolveLimits,
+} from './validation.js';
 import type { DecodeContext, UnknownRecord } from './validation.js';
 import type {
-	CanonicalTextmodeDocument,
+	CanonicalTextmodeDocumentLayer,
+	TextmodeDocumentWarning,
 	TextmodeDocumentDecodeOptions,
 	TextmodeDocumentDecodeResult,
 	TextmodeDocumentParseResult,
@@ -40,36 +50,35 @@ export function decodeTextmodeDocument(
 		const root = requireRecord(value, '$');
 		const format = requireString(root.format, '$.format');
 
-		if (format === TEXTMODE_DOCUMENT_FORMAT) {
-			return {
-				ok: true,
-				document: decodeCurrentDocument(root, context),
-				warnings:
-					root.formatVersion !== TEXTMODE_DOCUMENT_FORMAT_VERSION
-						? [
-								{
-									code: 'DOCUMENT_VERSION_MIGRATED',
-									message: `Migrated textmode.document ${String(root.formatVersion)} to 3.1.0.`,
-								},
-							]
-						: [],
-			};
-		}
+		const legacy = format === LEGACY_TEXTMODE_LAYER_FORMAT;
+		if (format !== TEXTMODE_DOCUMENT_FORMAT && !(legacy && (options.acceptLegacy ?? true)))
+			return failure('UNSUPPORTED_FORMAT', `Unsupported textmode document format: ${format}.`, '$.format');
 
-		if (format === LEGACY_TEXTMODE_LAYER_FORMAT && (options.acceptLegacy ?? true)) {
-			return {
-				ok: true,
-				document: decodeLegacyDocument(root, context),
-				warnings: [
-					{
-						code: 'LEGACY_DOCUMENT_MIGRATED',
-						message: 'Migrated a legacy textmode.layer document to textmode.document 3.1.0.',
-					},
-				],
-			};
+		const version = requireString(root.formatVersion, '$.formatVersion');
+		const warnings: TextmodeDocumentWarning[] = [];
+		const frames =
+			!legacy && version === TEXTMODE_DOCUMENT_FORMAT_VERSION
+				? decodeV4Frames(root, context)
+				: [{ durationMs: 100, layers: decodeHistoricalDocument(root, context, legacy) }];
+		if (legacy || version !== TEXTMODE_DOCUMENT_FORMAT_VERSION) {
+			warnings.push({
+				code: legacy ? 'LEGACY_DOCUMENT_MIGRATED' : 'DOCUMENT_VERSION_MIGRATED',
+				message: `Migrated ${format} ${version} to textmode.document ${TEXTMODE_DOCUMENT_FORMAT_VERSION}.`,
+			});
+			reassignDuplicateIds(frames[0].layers, context, warnings);
 		}
-
-		return failure('UNSUPPORTED_FORMAT', `Unsupported textmode document format: ${format}.`, '$.format');
+		return {
+			ok: true,
+			document: {
+				format: TEXTMODE_DOCUMENT_FORMAT,
+				formatVersion: TEXTMODE_DOCUMENT_FORMAT_VERSION,
+				...(root.metadata === undefined
+					? {}
+					: { metadata: decodeMetadata(root.metadata, '$.metadata', limits) }),
+				frames,
+			},
+			warnings,
+		};
 	} catch (error) {
 		if (error instanceof DocumentDecodeFailure) {
 			return { ok: false, error: error.detail };
@@ -97,22 +106,52 @@ export function parseTextmodeDocumentJSON(
 	return decodeTextmodeDocument(parsed.value, options);
 }
 
-function decodeCurrentDocument(root: UnknownRecord, context: DecodeContext): CanonicalTextmodeDocument {
-	const version = requireString(root.formatVersion, '$.formatVersion');
-	if (version === TEXTMODE_DOCUMENT_FORMAT_VERSION || version === '3.0.0') return decodeV3Document(root, context);
-	if (version !== '2.0.0') {
-		fail('UNSUPPORTED_VERSION', `Unsupported textmode.document version: ${version}.`, '$.formatVersion');
+function decodeHistoricalDocument(
+	root: UnknownRecord,
+	context: DecodeContext,
+	legacy: boolean
+): CanonicalTextmodeDocumentLayer[] {
+	const version = root.formatVersion;
+	if (legacy) {
+		if (version === LEGACY_TEXTMODE_SELECTED_VERSION) return decodeSelectedDocument(root, context);
+		if (version === LEGACY_TEXTMODE_ALL_VERSION) return decodeAllDocument(root, context);
+		fail(
+			'UNSUPPORTED_VERSION',
+			`Unsupported legacy textmode.layer version: ${String(version)}.`,
+			'$.formatVersion'
+		);
 	}
-
+	if (version === '3.0.0' || version === '3.1.0') return decodeV3Document(root, context);
+	if (version !== '2.0.0')
+		fail('UNSUPPORTED_VERSION', `Unsupported textmode.document version: ${String(version)}.`, '$.formatVersion');
 	const target = requireString(root.target, '$.target');
 	if (target === 'selected') return decodeSelectedDocument(root, context);
 	if (target === 'all') return decodeAllDocument(root, context);
 	fail('UNSUPPORTED_TARGET', `Unsupported textmode document target: ${target}.`, '$.target');
 }
 
-function decodeLegacyDocument(root: UnknownRecord, context: DecodeContext): CanonicalTextmodeDocument {
-	const version = requireString(root.formatVersion, '$.formatVersion');
-	if (version === LEGACY_TEXTMODE_SELECTED_VERSION) return decodeSelectedDocument(root, context);
-	if (version === LEGACY_TEXTMODE_ALL_VERSION) return decodeAllDocument(root, context);
-	fail('UNSUPPORTED_VERSION', `Unsupported legacy textmode.layer version: ${version}.`, '$.formatVersion');
+function reassignDuplicateIds(
+	layers: CanonicalTextmodeDocumentLayer[],
+	context: DecodeContext,
+	warnings: TextmodeDocumentWarning[]
+): void {
+	const reserved = new Set(layers.map((layer) => layer.id));
+	const seen = new Set<string>();
+	let nextId = 1;
+	layers.forEach((layer, index) => {
+		const original = layer.id;
+		if (seen.has(original)) {
+			while (reserved.has(String(nextId))) nextId++;
+			const path = `$.layers[${index}].id`;
+			layer.id = decodeLayerId(String(nextId), path, context.limits);
+			reserved.add(layer.id);
+			warnings.push({
+				code: 'LAYER_ID_REASSIGNED',
+				path,
+				message: `Reassigned duplicate layer ID ${JSON.stringify(original)} to ${JSON.stringify(layer.id)}.`,
+			});
+			nextId++;
+		}
+		seen.add(original);
+	});
 }

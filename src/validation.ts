@@ -122,7 +122,13 @@ export function assertCanvasMatchesGrid(
 export function resolveLimits(limits: TextmodeDocumentLimits | undefined): ResolvedLimits {
 	return {
 		maxCells: resolveLimit(limits?.maxCells, DEFAULT_TEXTMODE_DOCUMENT_LIMITS.maxCells, 'maxCells'),
+		maxFrames: resolveLimit(limits?.maxFrames, DEFAULT_TEXTMODE_DOCUMENT_LIMITS.maxFrames, 'maxFrames'),
 		maxLayers: resolveLimit(limits?.maxLayers, DEFAULT_TEXTMODE_DOCUMENT_LIMITS.maxLayers, 'maxLayers'),
+		maxTotalLayers: resolveLimit(
+			limits?.maxTotalLayers,
+			DEFAULT_TEXTMODE_DOCUMENT_LIMITS.maxTotalLayers,
+			'maxTotalLayers'
+		),
 		maxLayerIdLength: resolveLimit(
 			limits?.maxLayerIdLength,
 			DEFAULT_TEXTMODE_DOCUMENT_LIMITS.maxLayerIdLength,

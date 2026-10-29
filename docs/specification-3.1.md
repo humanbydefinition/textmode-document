@@ -1,5 +1,7 @@
 # Textmode document format 3.1
 
+This is a historical wire-format reference. The current decoder returns [v4 frames](specification-4.0.md) for every supported input.
+
 ## Status and scope
 
 This specification defines `textmode.document@3.1.0`. The npm package version
@@ -125,7 +127,7 @@ Supported v2 files are validated under their original rules, including canvas
 extent checks, before conversion. Selected v2 snapshots move their root grid
 into one layer and receive visible=true, opacity=1, normal blending, and zero
 offsets/rotation. V2 stacks preserve their layers. Both return
-`DOCUMENT_VERSION_MIGRATED` and canonical v3 output.
+`DOCUMENT_VERSION_MIGRATED` and canonical v4 frames.
 
 Legacy `textmode.layer@1.0.0` and `textmode.layer@1.1.0` migrate to one or more
 layers and return `LEGACY_DOCUMENT_MIGRATED`. `acceptLegacy: false` rejects these

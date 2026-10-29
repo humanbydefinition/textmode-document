@@ -8,7 +8,7 @@ export const TEXTMODE_DOCUMENT_FORMAT = 'textmode.document' as const;
  * Current textmode document schema revision.
  *
  */
-export const TEXTMODE_DOCUMENT_FORMAT_VERSION = '3.1.0' as const;
+export const TEXTMODE_DOCUMENT_FORMAT_VERSION = '4.0.0' as const;
 
 /** Legacy format discriminator accepted by the compatibility decoder. */
 export const LEGACY_TEXTMODE_LAYER_FORMAT = 'textmode.layer' as const;
@@ -20,7 +20,7 @@ export const LEGACY_TEXTMODE_SELECTED_VERSION = '1.0.0' as const;
 export const LEGACY_TEXTMODE_ALL_VERSION = '1.1.0' as const;
 
 /**
- * Canonical dense row encoding used by textmode document v2.
+ * Canonical dense row encoding used by supported textmode document versions.
  *
  */
 export const TEXTMODE_OBJECT_ROWS_ENCODING = 'object-rows-v1' as const;
@@ -28,7 +28,9 @@ export const TEXTMODE_OBJECT_ROWS_ENCODING = 'object-rows-v1' as const;
 /** Default protocol safety limits. Product-specific limits belong to callers. */
 export const DEFAULT_TEXTMODE_DOCUMENT_LIMITS = {
 	maxCells: 16_777_216,
+	maxFrames: 65_536,
 	maxLayers: 4_096,
+	maxTotalLayers: 65_536,
 	maxLayerIdLength: 1_024,
 	maxCharacterLength: 64,
 	maxMetadataStringLength: 4_096,
