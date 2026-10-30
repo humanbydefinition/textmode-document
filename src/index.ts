@@ -5,7 +5,7 @@
  * dependencies. It decodes v4 frames and migrates supported v1/v2/v3 documents; product-specific
  * import policy belongs to callers.
  *
- * @packageDocumentation
+ * @module document
  */
 
 export {
