@@ -2,11 +2,11 @@
 layout: doc
 editLink: false
 title: JSONParseResult
-description: JSONParseResult type definition and usage in @textmode/document.
+description: JSON syntax result; a successful value has not been validated as a document.
 category: Type Aliases
 api: true
 kind: TypeAlias
-lastModified: 2026-10-27
+lastModified: 2026-10-30
 ---
 
 [@textmode/document](../../index.md) / [index](../index.md) / JSONParseResult
@@ -24,3 +24,5 @@ type JSONParseResult =
   ok: false;
 };
 ```
+
+JSON syntax result; a successful value has not been validated as a document.

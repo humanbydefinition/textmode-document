@@ -2,11 +2,11 @@
 layout: doc
 editLink: false
 title: TextmodeDocumentWarning
-description: API documentation for the TextmodeDocumentWarning interface in @textmode/document.
+description: Nonfatal change made while migrating a historical document.
 category: Interfaces
 api: true
 kind: Interface
-lastModified: 2026-10-27
+lastModified: 2026-10-30
 isInterface: true
 ---
 
@@ -14,9 +14,12 @@ isInterface: true
 
 # Interface: TextmodeDocumentWarning
 
+Nonfatal change made while migrating a historical document.
+
 ## Properties
 
-| Property | Type |
-| ------ | ------ |
-| <a id="property-code"></a> `code` | `"LEGACY_DOCUMENT_MIGRATED"` \| `"DOCUMENT_VERSION_MIGRATED"` |
-| <a id="property-message"></a> `message` | `string` |
+| Property | Type | Description |
+| ------ | ------ | ------ |
+| <a id="property-code"></a> `code` | \| `"LEGACY_DOCUMENT_MIGRATED"` \| `"DOCUMENT_VERSION_MIGRATED"` \| `"LAYER_ID_REASSIGNED"` | Machine-readable migration warning category. |
+| <a id="property-message"></a> `message` | `string` | Human-readable explanation. |
+| <a id="property-path"></a> `path?` | `string` | Path to the relevant input value, when available. |

@@ -2,11 +2,11 @@
 layout: doc
 editLink: false
 title: TextmodeDocumentDecodeResult
-description: TextmodeDocumentDecodeResult type definition and usage in @textmode/document.
+description: Canonical document and migration warnings on success, or failure details.
 category: Type Aliases
 api: true
 kind: TypeAlias
-lastModified: 2026-10-27
+lastModified: 2026-10-30
 ---
 
 [@textmode/document](../../index.md) / [index](../index.md) / TextmodeDocumentDecodeResult
@@ -25,3 +25,5 @@ type TextmodeDocumentDecodeResult =
   ok: false;
 };
 ```
+
+Canonical document and migration warnings on success, or failure details.

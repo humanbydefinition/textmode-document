@@ -6,7 +6,7 @@ description: Portable textmode document format, JSON Schema, font identities, an
 category: API Reference
 api: true
 kind: Project
-lastModified: 2026-10-27
+lastModified: 2026-10-30
 ---
 
 # @textmode/document
@@ -15,5 +15,5 @@ lastModified: 2026-10-27
 
 | Module | Description |
 | ------ | ------ |
-| [font](font/index.md) | - |
+| [font](font/index.md) | Portable font identification, separate from document decoding. |
 | [index](index/index.md) | Dependency-free textmode document protocol codec. |

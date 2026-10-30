@@ -2,11 +2,11 @@
 layout: doc
 editLink: false
 title: CanonicalTextmodeCellCollection
-description: API documentation for the CanonicalTextmodeCellCollection interface in @textmode/document.
+description: Dense collection of decoded cells.
 category: Interfaces
 api: true
 kind: Interface
-lastModified: 2026-10-27
+lastModified: 2026-10-30
 isInterface: true
 ---
 
@@ -14,9 +14,11 @@ isInterface: true
 
 # Interface: CanonicalTextmodeCellCollection
 
+Dense collection of decoded cells.
+
 ## Properties
 
-| Property | Type |
-| ------ | ------ |
-| <a id="property-encoding"></a> `encoding` | `"object-rows-v1"` |
-| <a id="property-rows"></a> `rows` | [`CanonicalTextmodeCell`](CanonicalTextmodeCell.md)[][] |
+| Property | Type | Description |
+| ------ | ------ | ------ |
+| <a id="property-encoding"></a> `encoding` | `"object-rows-v1"` | Dense object-row encoding discriminator. |
+| <a id="property-rows"></a> `rows` | [`CanonicalTextmodeCell`](CanonicalTextmodeCell.md)[][] | Decoded cells in row-major order. |

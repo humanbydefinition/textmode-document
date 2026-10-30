@@ -2,11 +2,11 @@
 layout: doc
 editLink: false
 title: TextmodeDocumentLimits
-description: API documentation for the TextmodeDocumentLimits interface in @textmode/document.
+description: Resource budgets for decoding. Overrides must be positive safe integers.
 category: Interfaces
 api: true
 kind: Interface
-lastModified: 2026-10-27
+lastModified: 2026-10-30
 isInterface: true
 ---
 
@@ -14,12 +14,16 @@ isInterface: true
 
 # Interface: TextmodeDocumentLimits
 
+Resource budgets for decoding. Overrides must be positive safe integers.
+
 ## Properties
 
-| Property | Type |
-| ------ | ------ |
-| <a id="property-maxcells"></a> `maxCells?` | `number` |
-| <a id="property-maxcharacterlength"></a> `maxCharacterLength?` | `number` |
-| <a id="property-maxlayeridlength"></a> `maxLayerIdLength?` | `number` |
-| <a id="property-maxlayers"></a> `maxLayers?` | `number` |
-| <a id="property-maxmetadatastringlength"></a> `maxMetadataStringLength?` | `number` |
+| Property | Type | Description |
+| ------ | ------ | ------ |
+| <a id="property-maxcells"></a> `maxCells?` | `number` | Maximum total cells across all layers and frames. |
+| <a id="property-maxcharacterlength"></a> `maxCharacterLength?` | `number` | Maximum Unicode scalar values in a cell glyph. |
+| <a id="property-maxframes"></a> `maxFrames?` | `number` | Maximum number of frames. |
+| <a id="property-maxlayeridlength"></a> `maxLayerIdLength?` | `number` | Maximum layer ID length in UTF-16 code units. |
+| <a id="property-maxlayers"></a> `maxLayers?` | `number` | Maximum layer count within any one frame. |
+| <a id="property-maxmetadatastringlength"></a> `maxMetadataStringLength?` | `number` | Maximum length in UTF-16 code units for metadata, blend mode, and font name strings. |
+| <a id="property-maxtotallayers"></a> `maxTotalLayers?` | `number` | Cumulative layer instances across all frames. |

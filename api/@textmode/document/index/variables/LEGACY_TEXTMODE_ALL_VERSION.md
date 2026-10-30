@@ -6,7 +6,7 @@ description: Legacy layer-stack schema revision.
 category: Variables
 api: true
 kind: Variable
-lastModified: 2026-10-27
+lastModified: 2026-10-30
 ---
 
 [@textmode/document](../../index.md) / [index](../index.md) / LEGACY\_TEXTMODE\_ALL\_VERSION

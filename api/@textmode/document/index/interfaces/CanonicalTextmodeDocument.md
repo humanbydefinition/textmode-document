@@ -2,11 +2,11 @@
 layout: doc
 editLink: false
 title: CanonicalTextmodeDocument
-description: API documentation for the CanonicalTextmodeDocument interface in @textmode/document.
+description: Canonical v4 document returned by the decoder, including migrated input.
 category: Interfaces
 api: true
 kind: Interface
-lastModified: 2026-10-27
+lastModified: 2026-10-30
 isInterface: true
 ---
 
@@ -14,15 +14,17 @@ isInterface: true
 
 # Interface: CanonicalTextmodeDocument
 
+Canonical v4 document returned by the decoder, including migrated input.
+
 ## Extends
 
-- `Omit`\<[`TextmodeDocumentJSON`](TextmodeDocumentJSON.md), `"layers"`\>
+- `Omit`\<[`TextmodeDocumentJSON`](TextmodeDocumentJSON.md), `"frames"`\>
 
 ## Properties
 
-| Property | Type | Inherited from |
-| ------ | ------ | ------ |
-| <a id="property-format"></a> `format` | `"textmode.document"` | [`TextmodeDocumentJSON`](TextmodeDocumentJSON.md).[`format`](TextmodeDocumentJSON.md#property-format) |
-| <a id="property-formatversion"></a> `formatVersion` | `"3.1.0"` | [`TextmodeDocumentJSON`](TextmodeDocumentJSON.md).[`formatVersion`](TextmodeDocumentJSON.md#property-formatversion) |
-| <a id="property-layers"></a> `layers` | [`CanonicalTextmodeDocumentLayer`](CanonicalTextmodeDocumentLayer.md)[] | - |
-| <a id="property-metadata"></a> `metadata?` | [`TextmodeDocumentMetadata`](TextmodeDocumentMetadata.md) | [`TextmodeDocumentJSON`](TextmodeDocumentJSON.md).[`metadata`](TextmodeDocumentJSON.md#property-metadata) |
+| Property | Type | Description | Inherited from |
+| ------ | ------ | ------ | ------ |
+| <a id="property-format"></a> `format` | `"textmode.document"` | Document format discriminator. | [`TextmodeDocumentJSON`](TextmodeDocumentJSON.md).[`format`](TextmodeDocumentJSON.md#property-format) |
+| <a id="property-formatversion"></a> `formatVersion` | `"4.0.0"` | Wire format version, independent of the package version. | [`TextmodeDocumentJSON`](TextmodeDocumentJSON.md).[`formatVersion`](TextmodeDocumentJSON.md#property-formatversion) |
+| <a id="property-frames"></a> `frames` | [`CanonicalTextmodeDocumentFrame`](CanonicalTextmodeDocumentFrame.md)[] | Decoded frames in playback order. | - |
+| <a id="property-metadata"></a> `metadata?` | [`TextmodeDocumentMetadata`](TextmodeDocumentMetadata.md) | Optional producer metadata. | [`TextmodeDocumentJSON`](TextmodeDocumentJSON.md).[`metadata`](TextmodeDocumentJSON.md#property-metadata) |

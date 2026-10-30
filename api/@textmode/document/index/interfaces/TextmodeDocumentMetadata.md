@@ -6,7 +6,7 @@ description: Optional producer information; it does not control decoding behavio
 category: Interfaces
 api: true
 kind: Interface
-lastModified: 2026-10-27
+lastModified: 2026-10-30
 isInterface: true
 ---
 
@@ -18,9 +18,9 @@ Optional producer information; it does not control decoding behavior.
 
 ## Properties
 
-| Property | Type |
-| ------ | ------ |
-| <a id="property-createdat"></a> `createdAt` | `string` |
-| <a id="property-generator"></a> `generator` | `object` |
-| `generator.name` | `string` |
-| `generator.version` | `string` |
+| Property | Type | Description |
+| ------ | ------ | ------ |
+| <a id="property-createdat"></a> `createdAt` | `string` | Uppercase RFC 3339 timestamp with seconds and a timezone. |
+| <a id="property-generator"></a> `generator` | `object` | Producer name and version. |
+| `generator.name` | `string` | Producer name. |
+| `generator.version` | `string` | Producer version. |

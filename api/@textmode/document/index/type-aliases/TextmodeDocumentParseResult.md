@@ -2,11 +2,11 @@
 layout: doc
 editLink: false
 title: TextmodeDocumentParseResult
-description: TextmodeDocumentParseResult type definition and usage in @textmode/document.
+description: Result of parsing JSON and decoding its document.
 category: Type Aliases
 api: true
 kind: TypeAlias
-lastModified: 2026-10-27
+lastModified: 2026-10-30
 ---
 
 [@textmode/document](../../index.md) / [index](../index.md) / TextmodeDocumentParseResult
@@ -16,3 +16,5 @@ lastModified: 2026-10-27
 ```ts
 type TextmodeDocumentParseResult = TextmodeDocumentDecodeResult;
 ```
+
+Result of parsing JSON and decoding its document.

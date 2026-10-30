@@ -6,7 +6,7 @@ description: Format discriminator encoded in a document.
 category: Type Aliases
 api: true
 kind: TypeAlias
-lastModified: 2026-10-27
+lastModified: 2026-10-30
 ---
 
 [@textmode/document](../../index.md) / [index](../index.md) / TextmodeDocumentFormat

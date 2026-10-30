@@ -6,7 +6,7 @@ description: Parse JSON syntax before routing the resulting value by its format 
 category: Functions
 api: true
 kind: Function
-lastModified: 2026-10-27
+lastModified: 2026-10-30
 ---
 
 [@textmode/document](../../index.md) / [index](../index.md) / parseJSON
@@ -19,15 +19,20 @@ function parseJSON(json): JSONParseResult;
 
 Parse JSON syntax before routing the resulting value by its format discriminator.
 
+This uses `JSON.parse`, which keeps the last value for a repeated object key.
+It does not validate the result as a textmode document.
+
 ## Parameters
 
-| Parameter | Type |
-| ------ | ------ |
-| `json` | `string` |
+| Parameter | Type | Description |
+| ------ | ------ | ------ |
+| `json` | `string` | JSON text to parse. |
 
 ## Returns
 
 [`JSONParseResult`](../type-aliases/JSONParseResult.md)
+
+The parsed value, or an `INVALID_JSON` error.
 
 ## Example
 

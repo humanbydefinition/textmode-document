@@ -2,11 +2,11 @@
 layout: doc
 editLink: false
 title: TextmodeDocumentDecodeOptions
-description: API documentation for the TextmodeDocumentDecodeOptions interface in @textmode/document.
+description: Options for parsing and decoding documents.
 category: Interfaces
 api: true
 kind: Interface
-lastModified: 2026-10-27
+lastModified: 2026-10-30
 isInterface: true
 ---
 
@@ -14,9 +14,11 @@ isInterface: true
 
 # Interface: TextmodeDocumentDecodeOptions
 
+Options for parsing and decoding documents.
+
 ## Properties
 
 | Property | Type | Description |
 | ------ | ------ | ------ |
-| <a id="property-acceptlegacy"></a> `acceptLegacy?` | `boolean` | Accept textmode.layer v1; supported textmode.document v2 is always readable. |
-| <a id="property-limits"></a> `limits?` | [`TextmodeDocumentLimits`](TextmodeDocumentLimits.md) | - |
+| <a id="property-acceptlegacy"></a> `acceptLegacy?` | `boolean` | Accept textmode.layer v1. Defaults to true; supported v2 and v3 documents remain readable. |
+| <a id="property-limits"></a> `limits?` | [`TextmodeDocumentLimits`](TextmodeDocumentLimits.md) | Budget overrides; omitted values use the default limits. |

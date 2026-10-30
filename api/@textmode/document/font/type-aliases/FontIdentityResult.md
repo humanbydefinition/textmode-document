@@ -2,11 +2,11 @@
 layout: doc
 editLink: false
 title: FontIdentityResult
-description: FontIdentityResult type definition and usage in @textmode/document.
+description: Font identity on success, or a font validation error on failure.
 category: Type Aliases
 api: true
 kind: TypeAlias
-lastModified: 2026-10-27
+lastModified: 2026-10-30
 ---
 
 [@textmode/document](../../index.md) / [font](../index.md) / FontIdentityResult
@@ -27,3 +27,5 @@ type FontIdentityResult =
   ok: false;
 };
 ```
+
+Font identity on success, or a font validation error on failure.

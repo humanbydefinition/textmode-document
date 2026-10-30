@@ -6,7 +6,7 @@ description: Dense row-major cell collection.
 category: Interfaces
 api: true
 kind: Interface
-lastModified: 2026-10-27
+lastModified: 2026-10-30
 isInterface: true
 ---
 
@@ -18,7 +18,7 @@ Dense row-major cell collection.
 
 ## Properties
 
-| Property | Type |
-| ------ | ------ |
-| <a id="property-encoding"></a> `encoding` | `"object-rows-v1"` |
-| <a id="property-rows"></a> `rows` | [`TextmodeDocumentCell`](TextmodeDocumentCell.md)[][] |
+| Property | Type | Description |
+| ------ | ------ | ------ |
+| <a id="property-encoding"></a> `encoding` | `"object-rows-v1"` | Encoding discriminator for dense object rows. |
+| <a id="property-rows"></a> `rows` | [`TextmodeDocumentCell`](TextmodeDocumentCell.md)[][] | Rows in top-to-bottom order, each containing cells from left to right. |

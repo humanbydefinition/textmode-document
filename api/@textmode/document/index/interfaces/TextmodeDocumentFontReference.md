@@ -6,7 +6,7 @@ description: Portable identity of a normalized font revision. Matching uses only
 category: Interfaces
 api: true
 kind: Interface
-lastModified: 2026-10-27
+lastModified: 2026-10-30
 isInterface: true
 ---
 
@@ -18,7 +18,7 @@ Portable identity of a normalized font revision. Matching uses only id.
 
 ## Properties
 
-| Property | Type |
-| ------ | ------ |
-| <a id="property-id"></a> `id` | `` `sfnt-v1-sha256:${string}` `` |
-| <a id="property-name"></a> `name?` | `string` |
+| Property | Type | Description |
+| ------ | ------ | ------ |
+| <a id="property-id"></a> `id` | `` `sfnt-v1-sha256:${string}` `` | Complete normalized SFNT identity, including a lowercase SHA-256 digest. |
+| <a id="property-name"></a> `name?` | `string` | Optional display name; do not use it for identity matching. |
