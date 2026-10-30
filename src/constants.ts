@@ -1,31 +1,50 @@
 /**
  * Canonical format discriminator for textmode document files.
  *
+ * @category Format constants
  */
 export const TEXTMODE_DOCUMENT_FORMAT = 'textmode.document' as const;
 
 /**
  * Current textmode document schema revision.
  *
+ * @category Format constants
  */
 export const TEXTMODE_DOCUMENT_FORMAT_VERSION = '4.0.0' as const;
 
-/** Legacy format discriminator accepted by the compatibility decoder. */
+/**
+ * Legacy format discriminator accepted by the compatibility decoder.
+ *
+ * @category Historical formats
+ */
 export const LEGACY_TEXTMODE_LAYER_FORMAT = 'textmode.layer' as const;
 
-/** Legacy selected-layer schema revision. */
+/**
+ * Legacy selected-layer schema revision.
+ *
+ * @category Historical formats
+ */
 export const LEGACY_TEXTMODE_SELECTED_VERSION = '1.0.0' as const;
 
-/** Legacy layer-stack schema revision. */
+/**
+ * Legacy layer-stack schema revision.
+ *
+ * @category Historical formats
+ */
 export const LEGACY_TEXTMODE_ALL_VERSION = '1.1.0' as const;
 
 /**
  * Canonical dense row encoding used by supported textmode document versions.
  *
+ * @category Format constants
  */
 export const TEXTMODE_OBJECT_ROWS_ENCODING = 'object-rows-v1' as const;
 
-/** Default protocol safety limits. Product-specific limits belong to callers. */
+/**
+ * Default protocol safety limits. Product-specific limits belong to callers.
+ *
+ * @category Parsing and decoding
+ */
 export const DEFAULT_TEXTMODE_DOCUMENT_LIMITS = {
 	maxCells: 16_777_216,
 	maxFrames: 65_536,

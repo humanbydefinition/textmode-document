@@ -3,12 +3,20 @@ import type { JSONParseResult } from './types/index.js';
 /**
  * Parse JSON syntax before routing the resulting value by its format discriminator.
  *
+ * This uses `JSON.parse`, which keeps the last value for a repeated object key.
+ * It does not validate the result as a textmode document.
+ *
+ * @param json - JSON text to parse.
+ * @returns The parsed value, or an `INVALID_JSON` error.
+ *
  * @example
  * ```ts
  * import { parseJSON } from '@textmode/document';
  * const parsed = parseJSON('{"format":"textmode.document"}');
  * if (parsed.ok) console.log(parsed.value);
  * ```
+ *
+ * @category Parsing and decoding
  */
 export function parseJSON(json: string): JSONParseResult {
 	try {

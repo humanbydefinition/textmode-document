@@ -82,7 +82,7 @@
 		"lint": "textmode-lint lint src tests && node --check scripts/check-package.mjs",
 		"lint:markdown": "textmode-lint lint:markdown",
 		"typecheck": "tsc --noEmit -p tsconfig.json",
-		"docs:check": "textmode-docs check",
+		"docs:check": "textmode-docs check && textmode-docs api-check --config textmode.docs.font.config.mjs",
 		"docs:build": "textmode-docs build",
 		"test": "vitest run --dir tests",
 		"check:package": "node scripts/check-package.mjs",
