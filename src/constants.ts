@@ -1,12 +1,10 @@
 /**
  * Canonical format discriminator for textmode document files.
- *
  */
 export const TEXTMODE_DOCUMENT_FORMAT = 'textmode.document' as const;
 
 /**
  * Current textmode document schema revision.
- *
  */
 export const TEXTMODE_DOCUMENT_FORMAT_VERSION = '4.0.0' as const;
 
@@ -21,7 +19,6 @@ export const LEGACY_TEXTMODE_ALL_VERSION = '1.1.0' as const;
 
 /**
  * Canonical dense row encoding used by supported textmode document versions.
- *
  */
 export const TEXTMODE_OBJECT_ROWS_ENCODING = 'object-rows-v1' as const;
 

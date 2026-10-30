@@ -28,7 +28,14 @@ import type {
 
 /**
  * Decode a parsed value and normalize known document fields.
- * Invalid input returns a typed failure; invalid limit configuration throws TypeError.
+ * Supports textmode.document v2, v3.0, v3.1, and v4, and textmode.layer
+ * v1 by default. Historical documents become a single 100 ms frame. Unknown
+ * fields are omitted, and colors and cell rotations are normalized.
+ *
+ * @param value - Parsed value to validate and decode.
+ * @param options - Legacy format policy and resource budget overrides.
+ * @returns A canonical v4 document and migration warnings, or a typed failure.
+ * @throws {TypeError} If a configured limit is not a positive safe integer.
  *
  * @example
  * ```ts
@@ -88,7 +95,15 @@ export function decodeTextmodeDocument(
 }
 
 /**
- * Parse JSON syntax and decode a textmode document in one call.
+ * Parse JSON syntax and decode a textmode document in one synchronous call.
+ *
+ * Apply input byte limits before calling this function; decoder budgets apply
+ * after JSON parsing.
+ *
+ * @param json - JSON text containing a textmode document.
+ * @param options - Legacy format policy and resource budget overrides.
+ * @returns A canonical v4 document and migration warnings, or a typed failure.
+ * @throws {TypeError} If a configured limit is not a positive safe integer.
  *
  * @example
  * ```ts

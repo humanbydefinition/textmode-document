@@ -1,7 +1,12 @@
-/** Portable font identification, separate from document decoding. */
+/**
+ * Portable font identification, separate from document decoding.
+ *
+ * @packageDocumentation
+ */
 import { sha256 } from '@noble/hashes/sha2.js';
 import type { TextmodeDocumentFontReference } from './types/wire.js';
 
+/** Font identity on success, or a font validation error on failure. */
 export type FontIdentityResult =
 	| { ok: true; font: TextmodeDocumentFontReference }
 	| { ok: false; error: { code: 'INVALID_FONT' | 'UNSUPPORTED_FONT' | 'LIMIT_EXCEEDED'; message: string } };
@@ -9,9 +14,17 @@ export type FontIdentityResult =
 /**
  * Identify a decoded standalone SFNT font without loading or rendering it.
  *
+ * Accepts TTF or OTF SFNT bytes up to 16 MiB. WOFF data must be decoded first.
+ * The identity excludes DSIG and normalizes the head checksum adjustment.
+ * The optional font name is for display; match fonts using the complete ID.
+ *
+ * @param bytes - Decoded standalone SFNT font data.
+ * @returns The font reference, or a typed validation error.
+ *
  * @example
  * ```ts
- * const result = identifySfntFont(font.sourceData.copyBytes());
+ * import { identifySfntFont } from '@textmode/document/font';
+ * const result = identifySfntFont(decodedSfntBytes);
  * if (result.ok) console.log(result.font.id);
  * ```
  */
