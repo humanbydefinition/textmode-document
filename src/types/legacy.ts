@@ -6,7 +6,11 @@ import type {
 import type { TextmodeDocumentMetadata, TextmodeDocumentGrid } from './wire.js';
 import type { TextmodeV2DocumentLayer, TextmodeV2SelectedDocumentLayer } from './v2.js';
 
-/** Legacy v1.0 selected-layer wire document. */
+/**
+ * Legacy v1.0 selected-layer wire document.
+ *
+ * @category Historical formats
+ */
 export interface LegacyTextmodeSelectedDocumentJSON {
 	/** Optional JSON Schema identifier. */
 	$schema?: string;
@@ -24,7 +28,11 @@ export interface LegacyTextmodeSelectedDocumentJSON {
 	layer: TextmodeV2SelectedDocumentLayer;
 }
 
-/** Legacy v1.1 layer-stack wire document. */
+/**
+ * Legacy v1.1 layer-stack wire document.
+ *
+ * @category Historical formats
+ */
 export interface LegacyTextmodeAllDocumentJSON {
 	/** Optional JSON Schema identifier. */
 	$schema?: string;

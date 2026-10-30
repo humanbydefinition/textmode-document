@@ -43,6 +43,8 @@ import type {
  * const result = decodeTextmodeDocument({ format: 'unsupported' });
  * if (!result.ok) console.log(result.error.code);
  * ```
+ *
+ * @category Parsing and decoding
  */
 export function decodeTextmodeDocument(
 	value: unknown,
@@ -111,6 +113,8 @@ export function decodeTextmodeDocument(
  * const result = parseTextmodeDocumentJSON('{');
  * if (!result.ok) console.log(result.error.code); // INVALID_JSON
  * ```
+ *
+ * @category Parsing and decoding
  */
 export function parseTextmodeDocumentJSON(
 	json: string,

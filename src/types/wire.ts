@@ -4,12 +4,24 @@ import type {
 	TEXTMODE_OBJECT_ROWS_ENCODING,
 } from '../constants.js';
 
-/** Format discriminator encoded in a document. */
+/**
+ * Format discriminator encoded in a document.
+ *
+ * @category Document format
+ */
 export type TextmodeDocumentFormat = typeof TEXTMODE_DOCUMENT_FORMAT;
-/** Current on-disk format version, independent of the npm package version. */
+/**
+ * Current on-disk format version, independent of the npm package version.
+ *
+ * @category Document format
+ */
 export type TextmodeDocumentVersion = typeof TEXTMODE_DOCUMENT_FORMAT_VERSION;
 
-/** RGBA color channels, each an integer from 0 through 255. */
+/**
+ * RGBA color channels, each an integer from 0 through 255.
+ *
+ * @category Document format
+ */
 export interface TextmodeDocumentRGBAColor {
 	/** Red channel, from 0 through 255. */
 	r: number;
@@ -21,10 +33,18 @@ export interface TextmodeDocumentRGBAColor {
 	a: number;
 }
 
-/** On-disk color as `#RRGGBB`, `#RRGGBBAA`, or RGBA channels. Decoding produces RGBA channels. */
+/**
+ * On-disk color as `#RRGGBB`, `#RRGGBBAA`, or RGBA channels. Decoding produces RGBA channels.
+ *
+ * @category Document format
+ */
 export type TextmodeDocumentColor = string | TextmodeDocumentRGBAColor;
 
-/** Per-cell transform in degrees. */
+/**
+ * Per-cell transform in degrees.
+ *
+ * @category Document format
+ */
 export interface TextmodeDocumentCellTransform {
 	/** Whether to swap foreground and background colors. */
 	invert: boolean;
@@ -36,7 +56,11 @@ export interface TextmodeDocumentCellTransform {
 	rotation: number;
 }
 
-/** Cell at its redundant row-major x/y coordinates. */
+/**
+ * Cell at its redundant row-major x/y coordinates.
+ *
+ * @category Document format
+ */
 export interface TextmodeDocumentCell {
 	/** Zero-based column, matching the cell position in its row. */
 	x: number;
@@ -52,7 +76,11 @@ export interface TextmodeDocumentCell {
 	transform: TextmodeDocumentCellTransform;
 }
 
-/** Dense row-major cell collection. */
+/**
+ * Dense row-major cell collection.
+ *
+ * @category Document format
+ */
 export interface TextmodeDocumentCellCollection {
 	/** Encoding discriminator for dense object rows. */
 	encoding: typeof TEXTMODE_OBJECT_ROWS_ENCODING;
@@ -60,7 +88,11 @@ export interface TextmodeDocumentCellCollection {
 	rows: TextmodeDocumentCell[][];
 }
 
-/** Logical grid dimensions and pixel extent of each cell. */
+/**
+ * Logical grid dimensions and pixel extent of each cell.
+ *
+ * @category Document format
+ */
 export interface TextmodeDocumentGrid {
 	/** Number of columns, as a positive safe integer. */
 	cols: number;
@@ -72,7 +104,11 @@ export interface TextmodeDocumentGrid {
 	cellHeight: number;
 }
 
-/** Optional producer information; it does not control decoding behavior. */
+/**
+ * Optional producer information; it does not control decoding behavior.
+ *
+ * @category Document format
+ */
 export interface TextmodeDocumentMetadata {
 	/** Uppercase RFC 3339 timestamp with seconds and a timezone. */
 	createdAt: string;
@@ -85,7 +121,11 @@ export interface TextmodeDocumentMetadata {
 	};
 }
 
-/** Portable identity of a normalized font revision. Matching uses only id. */
+/**
+ * Portable identity of a normalized font revision. Matching uses only id.
+ *
+ * @category Document format
+ */
 export interface TextmodeDocumentFontReference {
 	/** Complete normalized SFNT identity, including a lowercase SHA-256 digest. */
 	id: `sfnt-v1-sha256:${string}`;
@@ -93,7 +133,11 @@ export interface TextmodeDocumentFontReference {
 	name?: string;
 }
 
-/** Complete layer snapshot with presentation, grid, and cell data. */
+/**
+ * Complete layer snapshot with presentation, grid, and cell data.
+ *
+ * @category Document format
+ */
 export interface TextmodeDocumentLayer {
 	/** Optional source-font identity; the font bytes are not embedded. */
 	font?: TextmodeDocumentFontReference;
@@ -117,7 +161,11 @@ export interface TextmodeDocumentLayer {
 	cells: TextmodeDocumentCellCollection;
 }
 
-/** Complete snapshot. Layers are bottom first; an empty stack is a blank frame. */
+/**
+ * Complete snapshot. Layers are bottom first; an empty stack is a blank frame.
+ *
+ * @category Document format
+ */
 export interface TextmodeDocumentFrame {
 	/** Positive finite milliseconds, including fractional milliseconds. */
 	durationMs: number;
@@ -125,7 +173,11 @@ export interface TextmodeDocumentFrame {
 	layers: TextmodeDocumentLayer[];
 }
 
-/** One portable document with one or more frames in playback order. */
+/**
+ * One portable document with one or more frames in playback order.
+ *
+ * @category Document format
+ */
 export interface TextmodeDocumentJSON {
 	/** Document format discriminator. */
 	format: TextmodeDocumentFormat;

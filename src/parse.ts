@@ -15,6 +15,8 @@ import type { JSONParseResult } from './types/index.js';
  * const parsed = parseJSON('{"format":"textmode.document"}');
  * if (parsed.ok) console.log(parsed.value);
  * ```
+ *
+ * @category Parsing and decoding
  */
 export function parseJSON(json: string): JSONParseResult {
 	try {

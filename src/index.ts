@@ -5,6 +5,22 @@
  * dependencies. It decodes v4 frames and migrates supported v1/v2/v3 documents; product-specific
  * import policy belongs to callers.
  *
+ * @categoryDescription Parsing and decoding
+ * Parse input, configure validation budgets, and handle results.
+ *
+ * @categoryDescription Document format
+ * Describe the current document wire format and its components.
+ *
+ * @categoryDescription Decoded documents
+ * Work with canonical documents returned by the decoder.
+ *
+ * @categoryDescription Historical formats
+ * Identify and describe supported historical document versions.
+ *
+ * @categoryDescription Format constants
+ * Identify the current format, version, and cell encoding.
+ *
+ * @showCategories
  * @module document
  */
 

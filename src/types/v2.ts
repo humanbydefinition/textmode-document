@@ -6,7 +6,11 @@ import type {
 	TextmodeDocumentLayer,
 } from './wire.js';
 
-/** Selected-layer payload in the historical v2 wire format. */
+/**
+ * Selected-layer payload in the historical v2 wire format.
+ *
+ * @category Historical formats
+ */
 export interface TextmodeV2SelectedDocumentLayer {
 	/** Document-local layer ID. */
 	id: string;
@@ -14,7 +18,11 @@ export interface TextmodeV2SelectedDocumentLayer {
 	cells: TextmodeDocumentCellCollection;
 }
 
-/** Layer fields required by the v2 wire format and validated during migration. */
+/**
+ * Layer fields required by the v2 wire format and validated during migration.
+ *
+ * @category Historical formats
+ */
 export interface TextmodeV2DocumentLayer extends TextmodeDocumentLayer {
 	/** Horizontal pixel offset. */
 	offsetX: number;
@@ -24,7 +32,11 @@ export interface TextmodeV2DocumentLayer extends TextmodeDocumentLayer {
 	rotationZ: number;
 }
 
-/** Historical v2 selected-layer wire document. */
+/**
+ * Historical v2 selected-layer wire document.
+ *
+ * @category Historical formats
+ */
 export interface TextmodeV2SelectedDocumentJSON {
 	/** Format discriminator. */
 	format: TextmodeDocumentFormat;
@@ -47,7 +59,11 @@ export interface TextmodeV2SelectedDocumentJSON {
 	layer: TextmodeV2SelectedDocumentLayer;
 }
 
-/** Historical v2 layer-stack wire document. */
+/**
+ * Historical v2 layer-stack wire document.
+ *
+ * @category Historical formats
+ */
 export interface TextmodeV2AllDocumentJSON {
 	/** Format discriminator. */
 	format: TextmodeDocumentFormat;
