@@ -15,5 +15,5 @@ lastModified: 2026-10-30
 
 | Module | Description |
 | ------ | ------ |
+| [document](document/index.md) | Dependency-free textmode document protocol codec. |
 | [font](font/index.md) | Portable font identification, separate from document decoding. |
-| [index](index/index.md) | Dependency-free textmode document protocol codec. |
